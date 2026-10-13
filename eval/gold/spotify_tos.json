@@ -1,0 +1,56 @@
+{
+  "document_id": "spotify_tos",
+  "document_name": "Spotify Terms and Conditions of Use",
+  "source_url": "https://www.spotify.com/legal/end-user-agreement/",
+  "retrieval_date": "2025-10-10",
+  "annotated_by": "Team Evaluation Annotator (University Project Pair)",
+  "reviewed_by_user": false,
+  "user_review_notes": "Pending human evaluator verification",
+  "clauses": [
+    {
+      "id": "gold-spot-1",
+      "category": "auto_renewal",
+      "quote": "your subscription will automatically renew at the end of each billing cycle unless you cancel your subscription through your account settings page at least 24 hours prior to the end of the current subscription period"
+    },
+    {
+      "id": "gold-spot-2",
+      "category": "no_refund",
+      "quote": "We do not provide refunds or credits for any partial subscription periods."
+    },
+    {
+      "id": "gold-spot-3",
+      "category": "unilateral_changes",
+      "quote": "We reserve the right to change our subscription plans or adjust pricing for our service in any manner and at any time as we may determine in our sole and absolute discretion."
+    },
+    {
+      "id": "gold-spot-4",
+      "category": "content_license_grant",
+      "quote": "you grant Spotify a worldwide, non-exclusive, transferable, sublicensable, royalty-free, fully paid, irrevocable license to use, reproduce, make available to the public, perform, display, translate, modify, and distribute such User Content"
+    },
+    {
+      "id": "gold-spot-5",
+      "category": "third_party_data_sharing",
+      "quote": "Spotify may share your personal data, listening history, and device identifiers with third-party partners and advertising networks to provide and personalize these experiences and targeted advertisements."
+    },
+    {
+      "id": "gold-spot-6",
+      "category": "account_termination_without_notice",
+      "quote": "Spotify may terminate your account or suspend your access to the Spotify Service at any time, including in the event of your actual or suspected unauthorized use of the Spotify Service or non-compliance with these Terms, without prior notice or liability to you."
+    },
+    {
+      "id": "gold-spot-7",
+      "category": "liability_limitation",
+      "quote": "in no event will Spotify, its officers, shareholders, employees, agents, directors, subsidiaries, affiliates, successors, assigns, suppliers, or licensors be liable for any indirect, special, incidental, punitive, exemplary, or consequential damages"
+    },
+    {
+      "id": "gold-spot-8",
+      "category": "forced_arbitration",
+      "quote": "any dispute, claim, or controversy between you and Spotify arising in connection with or relating in any way to these Agreements will be determined by mandatory binding individual arbitration."
+    },
+    {
+      "id": "gold-spot-9",
+      "category": "class_action_waiver",
+      "quote": "you and Spotify are each waiving the right to a trial by jury or to participate as a plaintiff or class member in any purported class action or representative proceeding."
+    }
+  ]
+}

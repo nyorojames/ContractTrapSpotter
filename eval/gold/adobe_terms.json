@@ -1,0 +1,56 @@
+{
+  "document_id": "adobe_terms",
+  "document_name": "Adobe General Terms of Use",
+  "source_url": "https://www.adobe.com/legal/terms.html",
+  "retrieval_date": "2025-10-12",
+  "annotated_by": "Team Evaluation Annotator (University Project Pair)",
+  "reviewed_by_user": false,
+  "user_review_notes": "Pending human evaluator verification",
+  "clauses": [
+    {
+      "id": "gold-adb-1",
+      "category": "auto_renewal",
+      "quote": "Paid subscriptions renew automatically for successive periods (such as monthly or annually) at the then-current rate unless you cancel before your renewal date."
+    },
+    {
+      "id": "gold-adb-2",
+      "category": "hard_to_cancel",
+      "quote": "If you cancel an annual plan paid monthly after the initial 14-day cancellation window, you may be charged an early termination fee equal to 50% of the remaining contract obligation."
+    },
+    {
+      "id": "gold-adb-3",
+      "category": "no_refund",
+      "quote": "We do not provide refunds for fees incurred prior to cancellation."
+    },
+    {
+      "id": "gold-adb-4",
+      "category": "content_license_grant",
+      "quote": "you grant us a non-exclusive, worldwide, royalty-free, sublicensable, and transferable license to use, reproduce, publicly display, distribute, modify, and translate your Content. This includes analyzing your Content using machine learning techniques to train our generative artificial intelligence models"
+    },
+    {
+      "id": "gold-adb-5",
+      "category": "unilateral_changes",
+      "quote": "We may modify, update, or discontinue the Services or Software (including any portions or features) at any time, without liability to you or anyone else."
+    },
+    {
+      "id": "gold-adb-6",
+      "category": "account_termination_without_notice",
+      "quote": "We may immediately terminate or suspend your access to the Services or Software at any time, without prior notice, if you breach any provision of these Terms or if Adobe decides to discontinue the Service"
+    },
+    {
+      "id": "gold-adb-7",
+      "category": "liability_limitation",
+      "quote": "Adobe's aggregate liability under these terms shall not exceed the amount paid by you in the preceding twelve months or $100, whichever is greater."
+    },
+    {
+      "id": "gold-adb-8",
+      "category": "forced_arbitration",
+      "quote": "Any dispute or claim arising out of or relating to these Terms or the Services will be settled by binding arbitration administered by the American Arbitration Association."
+    },
+    {
+      "id": "gold-adb-9",
+      "category": "class_action_waiver",
+      "quote": "You waive any right to pursue or participate in any class action, collective action, or private attorney general representative action against Adobe."
+    }
+  ]
+}

@@ -30,11 +30,11 @@
 - [x] Vitest injection tests (100% pass)
 - [x] SECURITY.md with honest vulnerability evaluation
 
-## Phase 4: Eval (in progress)
-- [ ] 5 real ToS documents
-- [ ] Gold annotations
-- [ ] Eval runner
-- [ ] EVAL.md with metrics
+## Phase 4: Eval ✅
+- [x] 5 real ToS documents (Spotify, Netflix, Adobe, Zoom, Dropbox)
+- [x] Gold annotations with reviewer tracking
+- [x] Eval runner (eval/run.ts)
+- [x] EVAL.md with metrics, failure analysis & dropped claims report
 
 ## Phase 5: Cypress Demo
 - [ ] Local fixture pages

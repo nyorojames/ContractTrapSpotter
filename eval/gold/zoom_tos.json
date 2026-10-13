@@ -1,0 +1,51 @@
+{
+  "document_id": "zoom_tos",
+  "document_name": "Zoom Terms of Service",
+  "source_url": "https://explore.zoom.us/en/terms/",
+  "retrieval_date": "2025-10-12",
+  "annotated_by": "Team Evaluation Annotator (University Project Pair)",
+  "reviewed_by_user": false,
+  "user_review_notes": "Pending human evaluator verification",
+  "clauses": [
+    {
+      "id": "gold-zm-1",
+      "category": "account_termination_without_notice",
+      "quote": "Zoom may terminate this Agreement or suspend your access to the Service immediately and without notice if you fail to comply with any provision of this Agreement"
+    },
+    {
+      "id": "gold-zm-2",
+      "category": "content_license_grant",
+      "quote": "you grant Zoom a perpetual, worldwide, non-exclusive, royalty-free license to redistribute, publish, copy, and prepare derivative works of Customer Content"
+    },
+    {
+      "id": "gold-zm-3",
+      "category": "broad_data_collection",
+      "quote": "You agree that Zoom may access, use, collect, create, and process Service Generated Data and telemetry for any purpose, including algorithm development and artificial intelligence model training."
+    },
+    {
+      "id": "gold-zm-4",
+      "category": "auto_renewal",
+      "quote": "All subscription plans renew automatically at the expiration of the subscription term for an equivalent term, at Zoom's then-current list prices, unless you provide written notice of non-renewal at least thirty (30) days prior to the expiration date."
+    },
+    {
+      "id": "gold-zm-5",
+      "category": "no_refund",
+      "quote": "Fees are non-refundable regardless of whether you actively utilize the purchased licenses."
+    },
+    {
+      "id": "gold-zm-6",
+      "category": "unilateral_changes",
+      "quote": "Zoom reserves the right to modify or discontinue any part of the Service, or update these Terms, at any time without prior notice."
+    },
+    {
+      "id": "gold-zm-7",
+      "category": "forced_arbitration",
+      "quote": "All disputes arising out of or related to this Agreement must be resolved by individual final and binding arbitration under the JAMS Comprehensive Arbitration Rules."
+    },
+    {
+      "id": "gold-zm-8",
+      "category": "class_action_waiver",
+      "quote": "BOTH PARTIES WAIVE ANY RIGHT TO JURY TRIAL AND AGREE TO BRING DISPUTES SOLELY IN AN INDIVIDUAL CAPACITY AND NOT AS A CLASS ACTION PLAINTIFF OR MEMBER."
+    }
+  ]
+}

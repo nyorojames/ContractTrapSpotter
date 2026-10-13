@@ -1,0 +1,23 @@
+# Netflix Terms of Use
+# Source: https://help.netflix.com/legal/termsofuse
+# Retrieved: 2025-10-11
+
+1. The Netflix Service
+Netflix is a personalized subscription service that provides members with access to entertainment content over the internet.
+
+2. Membership and Billing
+2.1. Ongoing Membership. Your Netflix membership will continue and automatically renew each month until terminated. To use the Netflix service you must have Internet access and a Netflix ready device, and provide us with one or more Payment Methods.
+2.2. Cancellation. You can cancel your Netflix membership at any time, and you will continue to have access to the Netflix service through the end of your billing period. Payments are nonrefundable and we do not provide refunds or credits for any partial membership periods or unwatched Netflix content.
+
+3. Changes to Price and Subscription Plans
+We reserve the right to change our subscription plans or adjust pricing for our service or any components thereof in any manner and at any time as we may determine in our sole and absolute discretion. Any price changes or changes to your subscription plans will take effect following notice to you.
+
+4. Account Access and Passwords
+The member who created the Netflix account and whose Payment Method is charged is responsible for any activity that occurs through the Netflix account. We may terminate your account or place your account on hold in order to protect you, Netflix or our partners from identity theft or other fraudulent activity.
+
+5. Data Processing and Profiling
+We collect information regarding your viewing activities, search queries, interactions with customer service, and device information. We use this information for behavioral profiling, algorithm training, and providing personalized recommendations and targeted commercial promotions.
+
+6. Governing Law and Arbitration Agreement
+6.1. If you are a resident of the United States, you and Netflix agree that any dispute, claim or controversy arising out of or relating in any way to the Netflix service, these Terms of Use and this Arbitration Agreement, shall be determined by binding arbitration or in small claims court.
+6.2. Class Action Waiver. YOU AND NETFLIX AGREE THAT EACH MAY BRING CLAIMS AGAINST THE OTHER ONLY IN YOUR OR ITS INDIVIDUAL CAPACITY, AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS OR REPRESENTATIVE PROCEEDING.

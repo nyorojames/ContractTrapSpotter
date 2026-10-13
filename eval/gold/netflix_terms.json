@@ -1,0 +1,41 @@
+{
+  "document_id": "netflix_terms",
+  "document_name": "Netflix Terms of Use",
+  "source_url": "https://help.netflix.com/legal/termsofuse",
+  "retrieval_date": "2025-10-11",
+  "annotated_by": "Team Evaluation Annotator (University Project Pair)",
+  "reviewed_by_user": false,
+  "user_review_notes": "Pending human evaluator verification",
+  "clauses": [
+    {
+      "id": "gold-net-1",
+      "category": "auto_renewal",
+      "quote": "Your Netflix membership will continue and automatically renew each month until terminated."
+    },
+    {
+      "id": "gold-net-2",
+      "category": "no_refund",
+      "quote": "Payments are nonrefundable and we do not provide refunds or credits for any partial membership periods or unwatched Netflix content."
+    },
+    {
+      "id": "gold-net-3",
+      "category": "unilateral_changes",
+      "quote": "We reserve the right to change our subscription plans or adjust pricing for our service or any components thereof in any manner and at any time as we may determine in our sole and absolute discretion."
+    },
+    {
+      "id": "gold-net-4",
+      "category": "tracking_profiling",
+      "quote": "We collect information regarding your viewing activities, search queries, interactions with customer service, and device information. We use this information for behavioral profiling, algorithm training"
+    },
+    {
+      "id": "gold-net-5",
+      "category": "forced_arbitration",
+      "quote": "you and Netflix agree that any dispute, claim or controversy arising out of or relating in any way to the Netflix service, these Terms of Use and this Arbitration Agreement, shall be determined by binding arbitration"
+    },
+    {
+      "id": "gold-net-6",
+      "category": "class_action_waiver",
+      "quote": "YOU AND NETFLIX AGREE THAT EACH MAY BRING CLAIMS AGAINST THE OTHER ONLY IN YOUR OR ITS INDIVIDUAL CAPACITY, AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS OR REPRESENTATIVE PROCEEDING."
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+# Zoom Terms of Service
+# Source: https://explore.zoom.us/en/terms/
+# Retrieved: 2025-10-12
+
+1. Services and Account Setup
+These Terms of Service govern your access to and use of Zoom's communications suite, videoconferencing tools, and related collaboration features.
+
+2. Term, Termination, and Suspension
+Zoom may terminate this Agreement or suspend your access to the Service immediately and without notice if you fail to comply with any provision of this Agreement, or if Zoom determines, in its sole discretion, that your use of the Service poses a security risk or violates acceptable use standards. Upon termination, all licenses granted to you immediately cease.
+
+3. Customer Content and AI Data Rights
+You agree that Zoom may access, use, collect, create, and process Service Generated Data and telemetry for any purpose, including algorithm development and artificial intelligence model training. With respect to Customer Content, you grant Zoom a perpetual, worldwide, non-exclusive, royalty-free license to redistribute, publish, copy, and prepare derivative works of Customer Content for the purpose of operating the services.
+
+4. Automatic Renewal and Invoicing
+All subscription plans renew automatically at the expiration of the subscription term for an equivalent term, at Zoom's then-current list prices, unless you provide written notice of non-renewal at least thirty (30) days prior to the expiration date. Fees are non-refundable regardless of whether you actively utilize the purchased licenses.
+
+5. Modifications to the Service and Terms
+Zoom reserves the right to modify or discontinue any part of the Service, or update these Terms, at any time without prior notice. Changes become effective upon posting to Zoom's website.
+
+6. Mandatory Arbitration and Jury Trial Waiver
+All disputes arising out of or related to this Agreement must be resolved by individual final and binding arbitration under the JAMS Comprehensive Arbitration Rules. BOTH PARTIES WAIVE ANY RIGHT TO JURY TRIAL AND AGREE TO BRING DISPUTES SOLELY IN AN INDIVIDUAL CAPACITY AND NOT AS A CLASS ACTION PLAINTIFF OR MEMBER.

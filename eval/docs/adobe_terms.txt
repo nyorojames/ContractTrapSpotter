@@ -1,0 +1,21 @@
+# Adobe General Terms of Use
+# Source: https://www.adobe.com/legal/terms.html
+# Retrieved: 2025-10-12
+
+1. Subscription Auto-Renewal and Cancellation Fees
+Paid subscriptions renew automatically for successive periods (such as monthly or annually) at the then-current rate unless you cancel before your renewal date. If you cancel an annual plan paid monthly after the initial 14-day cancellation window, you may be charged an early termination fee equal to 50% of the remaining contract obligation. We do not provide refunds for fees incurred prior to cancellation.
+
+2. Content Ownership and License to Adobe
+You retain all rights and ownership of your Content. However, solely for the purposes of operating or improving the Services and Software, you grant us a non-exclusive, worldwide, royalty-free, sublicensable, and transferable license to use, reproduce, publicly display, distribute, modify, and translate your Content. This includes analyzing your Content using machine learning techniques to train our generative artificial intelligence models unless you explicitly opt out.
+
+3. Updates and Unilateral Modifications
+We may modify, update, or discontinue the Services or Software (including any portions or features) at any time, without liability to you or anyone else. We may also modify these Terms from time to time. Your continued use of the Services or Software following any modification indicates your acceptance of the updated Terms.
+
+4. Termination by Adobe Without Notice
+We may immediately terminate or suspend your access to the Services or Software at any time, without prior notice, if you breach any provision of these Terms or if Adobe decides to discontinue the Service in whole or in part.
+
+5. Limitation of Liability
+To the maximum extent permitted by law, Adobe and its suppliers shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or damages for loss of profits, revenue, data, or use, incurred by you or any third party, whether in an action in contract or tort. Adobe's aggregate liability under these terms shall not exceed the amount paid by you in the preceding twelve months or $100, whichever is greater.
+
+6. Dispute Resolution, Arbitration, and Class Action Waiver
+Any dispute or claim arising out of or relating to these Terms or the Services will be settled by binding arbitration administered by the American Arbitration Association. You waive any right to pursue or participate in any class action, collective action, or private attorney general representative action against Adobe.
