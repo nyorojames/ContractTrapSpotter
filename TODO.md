@@ -1,35 +1,36 @@
 # ContractTrapSpotter - TODO
 
-## Phase 1: Scaffold + Capture + Panel ✅ (in progress)
+## Phase 1: Scaffold + Capture + Panel ✅
 - [x] Project scaffold (Vite + TS + Manifest V3)
 - [x] Module structure
-- [ ] Content script: legal page detection
-- [ ] Content script: Analyze button injection
-- [ ] DOM capture with hidden content detection
-- [ ] Shadow DOM report panel
-- [ ] page-agent integration for DOM reading
-- [ ] Options page for API key
+- [x] Content script: legal page detection
+- [x] Content script: Analyze button injection
+- [x] DOM capture with hidden content detection
+- [x] Shadow DOM report panel
+- [x] page-agent integration for DOM reading & safe allowlist
+- [x] Options page for API key
 
-## Phase 2: Schema + LLM + Validation + Scoring
-- [ ] Zod schemas for LLM response
-- [ ] LLM provider abstraction (Gemini/OpenAI/Anthropic)
-- [ ] LLM call with structured JSON mode
-- [ ] Quote verification (normalized substring check)
-- [ ] Fuzzy match fallback (>= 0.95 similarity)
-- [ ] Deterministic scoring algorithm
-- [ ] Chunking with overlapping offsets
-- [ ] De-duplication of clauses across chunks
-- [ ] Validation pipeline: schema -> enum -> quote -> dedupe -> drop
+## Phase 2: Schema + LLM + Validation + Scoring ✅
+- [x] Zod schemas for LLM response
+- [x] LLM provider abstraction (Gemini/OpenAI/Anthropic)
+- [x] LLM call with structured JSON mode
+- [x] Quote verification (normalized substring check)
+- [x] Fuzzy match fallback (>= 0.95 similarity)
+- [x] Deterministic scoring algorithm
+- [x] Chunking with overlapping offsets
+- [x] De-duplication of clauses across chunks
+- [x] Validation pipeline: schema -> enum -> quote -> dedupe -> drop
+- [x] Unit tests for quote verification, scoring, schema, chunker
 
-## Phase 3: Injection Defenses
-- [ ] Pre-LLM injection regex scanner
-- [ ] Hidden content stripping (display:none, aria-hidden, etc.)
-- [ ] page-agent action allowlist (read-only)
-- [ ] Injection test fixtures
-- [ ] Vitest injection tests
-- [ ] SECURITY.md
+## Phase 3: Injection Defenses ✅
+- [x] Pre-LLM injection regex scanner (multilingual)
+- [x] Hidden content stripping (display:none, aria-hidden, white-on-white, offscreen)
+- [x] page-agent action allowlist (read-only)
+- [x] Injection test fixtures (9 attack vectors)
+- [x] Vitest injection tests (100% pass)
+- [x] SECURITY.md with honest vulnerability evaluation
 
-## Phase 4: Eval
+## Phase 4: Eval (in progress)
 - [ ] 5 real ToS documents
 - [ ] Gold annotations
 - [ ] Eval runner

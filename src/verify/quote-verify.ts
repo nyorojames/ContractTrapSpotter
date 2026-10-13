@@ -48,16 +48,51 @@ function bestSlidingWindowSimilarity(needle: string, haystack: string): number {
   if (needle.length > haystack.length) return diceSimilarity(needle, haystack);
 
   const windowSize = needle.length;
-  // Use a step size to avoid O(n*m) complexity on huge texts
-  const step = Math.max(1, Math.floor(windowSize / 4));
   let bestScore = 0;
 
-  for (let i = 0; i <= haystack.length - windowSize; i += step) {
-    const window = haystack.substring(i, i + windowSize + Math.floor(windowSize * 0.1));
-    const score = diceSimilarity(needle, window);
-    if (score > bestScore) {
-      bestScore = score;
-      if (bestScore >= 0.98) return bestScore; // Early exit
+  // Extract distinct anchor words from the needle (length >= 3)
+  const words = needle.split(/\s+/).filter(w => w.length >= 3);
+  const candidates = new Set<number>();
+
+  const checkWords = [
+    words[0],
+    words[Math.floor(words.length / 2)],
+    words[words.length - 1],
+  ].filter(Boolean);
+
+  for (const word of checkWords) {
+    let idx = haystack.indexOf(word);
+    while (idx !== -1 && candidates.size < 30) {
+      candidates.add(idx);
+      idx = haystack.indexOf(word, idx + 1);
+    }
+  }
+
+  // Check windows around candidate anchor positions
+  for (const pos of candidates) {
+    for (let offset = -Math.floor(windowSize / 2); offset <= Math.floor(windowSize / 2); offset += 2) {
+      const start = Math.max(0, pos + offset);
+      const end = Math.min(haystack.length, start + windowSize);
+      if (end - start < Math.floor(windowSize * 0.9)) continue;
+      const window = haystack.substring(start, end);
+      const score = diceSimilarity(needle, window);
+      if (score > bestScore) {
+        bestScore = score;
+        if (bestScore >= 0.98) return bestScore;
+      }
+    }
+  }
+
+  // Fallback: fine-grained sliding window
+  if (bestScore < 0.95) {
+    const step = Math.max(1, Math.min(8, Math.floor(windowSize / 8)));
+    for (let i = 0; i <= haystack.length - windowSize; i += step) {
+      const window = haystack.substring(i, i + windowSize);
+      const score = diceSimilarity(needle, window);
+      if (score > bestScore) {
+        bestScore = score;
+        if (bestScore >= 0.98) return bestScore;
+      }
     }
   }
 

@@ -1,7 +1,30 @@
-import { defineConfig } from 'vite';
+import { defineConfig, Plugin } from 'vite';
 import { resolve } from 'path';
+import fs from 'fs';
+
+function copyExtensionAssets(): Plugin {
+  return {
+    name: 'copy-extension-assets',
+    closeBundle() {
+      if (!fs.existsSync('dist')) {
+        fs.mkdirSync('dist', { recursive: true });
+      }
+      if (fs.existsSync('manifest.json')) {
+        fs.copyFileSync('manifest.json', 'dist/manifest.json');
+      }
+      // Ensure options/options.html exists matching manifest.json
+      if (fs.existsSync('dist/src/options/options.html')) {
+        if (!fs.existsSync('dist/options')) {
+          fs.mkdirSync('dist/options', { recursive: true });
+        }
+        fs.copyFileSync('dist/src/options/options.html', 'dist/options/options.html');
+      }
+    },
+  };
+}
 
 export default defineConfig({
+  plugins: [copyExtensionAssets()],
   build: {
     rollupOptions: {
       input: {

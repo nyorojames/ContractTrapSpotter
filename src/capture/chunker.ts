@@ -56,6 +56,11 @@ export function chunkText(
       }
     }
 
+    // Ensure endOffset is strictly greater than startOffset
+    if (endOffset <= startOffset) {
+      endOffset = Math.min(startOffset + chunkSize, text.length);
+    }
+
     chunks.push({
       text: text.substring(startOffset, endOffset),
       startOffset,
@@ -64,7 +69,12 @@ export function chunkText(
       totalChunks: 0, // Will be set after
     });
 
-    startOffset = endOffset - overlap;
+    const nextStart = endOffset - overlap;
+    if (nextStart <= startOffset) {
+      startOffset = endOffset;
+    } else {
+      startOffset = nextStart;
+    }
     if (startOffset >= text.length) break;
   }
 
