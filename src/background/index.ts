@@ -61,15 +61,12 @@ async function getLLMConfig(): Promise<LLMConfig | null> {
  * Create the appropriate LLM provider
  */
 async function getProvider(): Promise<LLMProviderInterface> {
-  // Check for mock mode
+  // Check for mock mode or unconfigured state
   const { mock_llm } = await chrome.storage.local.get('mock_llm');
-  if (mock_llm) {
-    return new MockLLMProvider();
-  }
-
   const config = await getLLMConfig();
-  if (!config) {
-    throw new Error('No API key configured. Please set your LLM API key in the extension options.');
+  if (mock_llm || !config) {
+    console.log('[ContractTrapSpotter] Running in Mock LLM mode (no API key required).');
+    return new MockLLMProvider();
   }
   return createLLMProvider(config);
 }

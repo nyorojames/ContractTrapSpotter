@@ -36,15 +36,19 @@
 - [x] Eval runner (eval/run.ts)
 - [x] EVAL.md with metrics, failure analysis & dropped claims report
 
-## Phase 5: Cypress Demo
-- [ ] Local fixture pages
-- [ ] Cypress config with extension loading
-- [ ] Happy path spec
-- [ ] Uncertainty spec
-- [ ] Injection spec
+## Phase 5: Cypress Demo ✅
+- [x] Local fixture pages (tos_page, ambiguous_page, injection_page)
+- [x] Fixture HTTP test server (cypress/server.ts)
+- [x] Cypress config with MV3 extension loading & video recording
+- [x] Happy path spec (01_happy_path.cy.ts)
+- [x] Uncertainty spec (02_uncertainty.cy.ts)
+- [x] Injection spec (03_injection.cy.ts)
 
-## Phase 6: README + Cleanup
-- [ ] Architecture diagram (Mermaid)
-- [ ] Data flow explanation
-- [ ] Known limitations
-- [ ] Final disclaimer
+## Phase 6: README + Cleanup ✅
+- [x] Architecture diagram (Mermaid flowchart)
+- [x] Data flow explanation (end-to-end steps)
+- [x] Role of page-agent & safe action allowlist
+- [x] Schema, quote verification & deterministic scoring formulas
+- [x] SECURITY.md with prompt injection testing
+- [x] Known limitations & honest failure analysis
+- [x] Permanent legal disclaimer displayed at all times

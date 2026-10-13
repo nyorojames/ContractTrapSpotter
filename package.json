@@ -10,6 +10,7 @@
     "test:watch": "vitest",
     "lint": "tsc --noEmit",
     "eval": "tsx eval/run.ts",
+    "demo:server": "tsx cypress/server.ts",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run"
   },
