@@ -53,6 +53,9 @@ function injectAnalyzeButton(): void {
         background: #999;
         cursor: not-allowed;
       }
+      button * {
+        pointer-events: none;
+      }
       .icon {
         font-size: 18px;
       }

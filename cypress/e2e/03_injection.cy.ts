@@ -1,6 +1,7 @@
 describe('Spec 3: Prompt Injection Defense in Browser UI', () => {
   it('detects prompt injection attempt, displays warning, and preserves score', () => {
     cy.visit('/injection');
+    cy.injectExtension();
 
     // Wait for Analyze button
     cy.get('#cts-analyze-btn', { timeout: 8000 }).should('exist');

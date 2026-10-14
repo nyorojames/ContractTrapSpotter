@@ -1,6 +1,7 @@
 describe('Spec 2: Honest Uncertainty & Dropped Claims', () => {
   it('detects ambiguous/non-matching text and presents honest inconclusive state', () => {
     cy.visit('/ambiguous');
+    cy.injectExtension();
 
     // Wait for content script button (heading mentions User Agreement)
     cy.get('#cts-analyze-btn', { timeout: 8000 }).should('exist');

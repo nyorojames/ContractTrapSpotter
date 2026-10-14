@@ -1,6 +1,7 @@
 describe('Spec 1: Happy Path - ToS Page Analysis & Quote Highlighting', () => {
   it('detects ToS page, analyzes clauses, displays score and highlights quote in page', () => {
     cy.visit('/tos');
+    cy.injectExtension();
 
     // Wait for content script to detect legal document and inject Analyze button
     cy.get('#cts-analyze-btn', { timeout: 8000 }).should('exist');
