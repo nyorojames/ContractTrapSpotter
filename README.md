@@ -1,4 +1,5 @@
 # ContractTrapSpotter ⚖️🔍
+
 > **Automated Legal Risk Assessment & Clause Spotter Chrome Extension (Manifest V3)**  
 > Developed as a university software verification and testing project. Built with TypeScript, Vite, Zod, Vitest, and Cypress.
 
@@ -17,10 +18,10 @@ ContractTrapSpotter isolates the untrusted web DOM, enforces deterministic valid
 flowchart TD
     subgraph Browser ["Web Page Context"]
         A["DOM & URL / Title"] --> B["Legal Page Detector<br>(detectLegalPage)"]
-        B -->|Matches Heuristics| C["Floating 'Analyze' Button<br>(Shadow DOM)"]
-        C -->|User Clicks| PA["PageAgent Prep & Allowlist Guard<br>(prepareDocumentWithPageAgent)"]
-        PA -->|Safe Accordion Expansion & getBrowserState| D["DOM Extractor & Sanitizer<br>(capturePageText)"]
-        D -->|Strips hidden & comments| E["Clean Document Text<br>+ Hidden Content Telemetry"]
+        B -->|"Matches heuristics"| C["Floating 'Analyze' Button<br>(Shadow DOM)"]
+        C -->|"User clicks"| PA["PageAgent Prep & Allowlist Guard<br>(prepareDocumentWithPageAgent)"]
+        PA -->|"Safe accordion expansion and getBrowserState"| D["DOM Extractor & Sanitizer<br>(capturePageText)"]
+        D -->|"Strips hidden content and comments"| E["Clean Document Text<br>+ Hidden Content Telemetry"]
     end
 
     subgraph Defense ["Security & Sanitization"]
@@ -33,11 +34,11 @@ flowchart TD
         H --> I["LLM Provider Abstraction<br>(Gemini / OpenAI / Anthropic / Mock)"]
         I --> J["JSON Response"]
         J --> K{"Zod Schema Validation<br>(LLMResponseSchema)"}
-        K -->|Invalid JSON| L["Retry Once with Error Feedback"]
+        K -->|"Invalid JSON"| L["Retry Once with Error Feedback"]
         L --> K
-        K -->|Valid JSON| M["Quote Verification Engine<br>(verifyQuote)"]
-        M -->|Quote Substring Found (>=0.95)| N["Verified Clauses"]
-        M -->|Quote Hallucinated / Fabricated| O["DROP Clause & Increment<br>Dropped Counter"]
+        K -->|"Valid JSON"| M["Quote Verification Engine<br>(verifyQuote)"]
+        M -->|"Quote found, similarity at least 0.95"| N["Verified Clauses"]
+        M -->|"Quote hallucinated or fabricated"| O["DROP Clause and Increment<br>Dropped Counter"]
         N --> P["Deterministic Scoring Engine<br>(computeScore)"]
     end
 
@@ -71,8 +72,8 @@ flowchart TD
 5. **LLM Provider Execution**: The request is routed via the Chrome background service worker (`src/background/index.ts`) to the configured provider (Google Gemini Flash, OpenAI GPT-4o-mini, Anthropic Claude, or the offline deterministic `MockLLMProvider`).
 6. **Strict Validation Pipeline**:
    - **Schema Validation**: Verified via Zod (`LLMResponseSchema`). Ensures the 17-item clause category enum, severity (1-5), and confidence (0-1) are adhered to.
-    - **Quote Verification**: Verifies quotes are verbatim substrings in the clean captured text extracted from the live DOM by `capturePageText()` (with hidden content, navigation, scripts, and styles stripped). Fabricated or non-matching quotes are instantly dropped. *(Note: Offline evaluation in `eval/run.ts` bypasses the browser DOM capture path and tests directly against the static corpus in `eval/docs/*.txt`)*.
-    - **De-duplication**: Overlapping clauses from adjacent chunks are merged, preserving the highest confidence entry.
+   - **Quote Verification**: Verifies quotes are verbatim substrings in the clean captured text extracted from the live DOM by `capturePageText()` (with hidden content, navigation, scripts, and styles stripped). Fabricated or non-matching quotes are instantly dropped. _(Note: Offline evaluation in `eval/run.ts` bypasses the browser DOM capture path and tests directly against the static corpus in `eval/docs/_.txt`)\*.
+   - **De-duplication**: Overlapping clauses from adjacent chunks are merged, preserving the highest confidence entry.
 7. **Deterministic Scoring in Code**: The LLM **never** supplies the final score. The score is computed strictly from the validated clauses:
    $$\text{Clause Contribution} = \text{Category Weight} \times \text{Severity} \times \text{Confidence}$$
    $$\text{Score} = \text{round}\left(100 \times \left(1 - e^{-\frac{\text{Raw Total}}{150}}\right)\right)$$
@@ -83,6 +84,7 @@ flowchart TD
 ## 3. page-agent: What is Real and What is Not
 
 ### What is Real (Actually Executed in Code)
+
 - **Direct Package Import**: `page-agent` is imported directly into `src/page-agent/integration.ts` (`import { PageAgent } from 'page-agent'`) and bundled by Vite into `dist/content.js`.
 - **Pre-Capture Expansion**: When the user clicks "Analyze", `prepareDocumentWithPageAgent()` instantiates `PageAgent` using the user's private API key configured in extension settings. It runs a single constrained command: `"expand all collapsed sections of the terms text"`.
 - **DOM State Retrieval**: It extracts structured browser state via `agent.pageController.getBrowserState()`.
@@ -91,17 +93,19 @@ flowchart TD
 - **Untrusted Output Pipeline**: Text returned by `page-agent` is never trusted directly; it passes through hidden-content stripping, regex injection scanning, delimiter isolation, and quote verification.
 
 ### What is NOT Used (and Why)
+
 - **No Risk Judgments**: `page-agent` is **never** used to evaluate contract risk or assign scores. That is reserved for our deterministic code scoring engine.
 - **No Demo LLM**: We never load `page-agent.demo.js` or use Alibaba's public evaluation API key.
 - **No Dynamic Script Tool (`eval` Forbidden in MV3)**: In `@page-agent/page-controller` line 1995, `executeJavascript` uses `eval()`. Under Chrome Manifest V3 Content Security Policy, `eval` is forbidden (`script-src 'self'`). We never enable or execute this tool.
 - **Suppressed Built-In Panel**: `new PageAgent()` automatically mounts an uninvited floating chat panel (`Panel`) to `document.body`. We explicitly suppress it via `agent.panel.hide()` and `display: none` to prevent conflicts with our shadow DOM report overlay.
-- **Native DOM Fallback**: During real Chrome tests on sites like `adobe.com/privacy/policy.html`, `page-agent` threw `TypeError: Failed to fetch` / `InvokeError: Network request failed` (*unverified hypothesis: page CSP `connect-src 'self'` or CORS restrictions*). To guarantee resilience on any website, `prepareDocumentWithPageAgent()` catches network or runtime failures, routes LLM requests through the background worker when available, and falls back to `expandWithNativeDom()`, reporting the exact fallback reason in the UI.
+- **Native DOM Fallback**: During real Chrome tests on sites like `adobe.com/privacy/policy.html`, `page-agent` threw `TypeError: Failed to fetch` / `InvokeError: Network request failed` (_unverified hypothesis: page CSP `connect-src 'self'` or CORS restrictions_). To guarantee resilience on any website, `prepareDocumentWithPageAgent()` catches network or runtime failures, routes LLM requests through the background worker when available, and falls back to `expandWithNativeDom()`, reporting the exact fallback reason in the UI.
 
 ---
 
 ## 4. Clause Taxonomy & Schema
 
 ### The 17 Clause Categories:
+
 1. `auto_renewal`: Recurring charges without periodic re-authorization.
 2. `hard_to_cancel`: Onerous cancellation hurdles or early termination penalties.
 3. `no_refund`: Strict non-refundable terms limiting statutory remedies.
@@ -125,6 +129,7 @@ flowchart TD
 ## 5. Quote Verification Logic
 
 A hallucinated legal claim without exact textual grounding is dangerous. ContractTrapSpotter enforces:
+
 1. **Unicode & Whitespace Normalization**:
    - Smart typographic quotes (`“`, `”`, `‘`, `’`) $\rightarrow$ ASCII (`"`, `'`).
    - Typographic dashes (em-dash `—`, en-dash `–`, horizontal bar `―`) $\rightarrow$ hyphen (`-`).
@@ -152,10 +157,12 @@ See [`SECURITY.md`](./SECURITY.md) for full audit matrix and details.
 ## 7. Setup & How to Run
 
 ### Prerequisites
+
 - Node.js $\ge 18$ (Tested on Node.js v24)
 - npm $\ge 9$
 
 ### Installation & Build
+
 ```bash
 # 1. Install dependencies
 npm install
@@ -168,6 +175,7 @@ npm run build
 ```
 
 ### Loading into Google Chrome / Chromium
+
 1. Open Chrome and navigate to `chrome://extensions/`.
 2. Enable **Developer mode** (top-right toggle).
 3. Click **Load unpacked** (top-left).
@@ -184,6 +192,7 @@ To evaluate ContractTrapSpotter against real-world Terms of Service documents (S
 ```bash
 npm run eval
 ```
+
 This executes `eval/run.ts`, calculates TP, FP, FN, dropped claims, precision, recall, and F1 scores, and regenerates [`EVAL.md`](./EVAL.md).
 
 ---
@@ -191,36 +200,44 @@ This executes `eval/run.ts`, calculates TP, FP, FN, dropped claims, precision, r
 ## 9. Demo & Cypress E2E Tests (< 90 s)
 
 ### Test Execution Mode
+
 > **Execution Mode**: **content script injected by a Cypress harness with stubbed chrome APIs; the packaged extension was tested manually in Chrome**.  
 > In automated Cypress test runs, the content script (`dist/content.js`) is injected directly into the application under test iframe (`cy.window`) via `cypress/support/e2e.ts`, which stubs `chrome.runtime.sendMessage` and `chrome.storage.local` with deterministic mock mode responses. Live, unpacked extension execution was verified manually in Google Chrome via `chrome://extensions`.
 
 ### Mock LLM Mode
+
 For offline demonstration and running without an active API key:
+
 - Toggle **Use mock LLM (for testing/demo, no API key needed)** in the extension options page (`dist/options/options.html` or `chrome.storage.local.set({ mock_llm: true })`).
 - When active, the background worker routes requests to `MockLLMProvider`, and the report panel renders a distinct **Mock LLM** badge in the stats header (`data-testid="mock-indicator"`). The Cypress test harness replicates this exact mock pipeline.
 
 ### Specifications & Assertions
+
 All 3 scenarios pass within the single merged demonstration suite ([`cypress/e2e/demo.cy.ts`](file:///c:/James/Software%20eng%20classes/3.sinif/1.sem/Yazılım%20Gerçekleme%20ve%20Test/ContractTrapSpotter/cypress/e2e/demo.cy.ts)) running at 1280x720 viewport with distinct banner captions:
+
 1. **Happy Path**: Page detection, button click, quote highlighting in page (`mark.cts-highlight`), deterministic risk score calculation (> 0), and disclaimer display.
 2. **Honest Uncertainty**: Unclear / ungrounded quotes resulting in dropped claims notice and honest `Inconclusive Risk` state.
 3. **Prompt Injection Defense**: In-browser prompt injection detection, warning banner display (`Injection Attempts Detected`), and preserving score without zeroing out.
 
 ### Running the Cypress Tests
+
 ```bash
 # Run the E2E demonstration spec:
 npm run cypress:run
 ```
-*(The Cypress configuration automatically spins up the local fixture HTTP server on `http://localhost:3000` if not already running, and closes it upon test completion).*
+
+_(The Cypress configuration automatically spins up the local fixture HTTP server on `http://localhost:3000` if not already running, and closes it upon test completion)._
 
 ### Video Recording (Target: 60 - 85 s)
+
 - `cypress/videos/demo.cy.ts.mp4`: **75.00 seconds** exact duration via `ffprobe` (3 passing scenarios, explicit readable pacing, compressed with CRF 32; comfortably within the 60–85 second requirement).
 
 ---
 
 ## 10. Known Limitations
 
-1. **Hedging & Contextual Jargon**: Phrases like *"from time to time"* or *"at our sole discretion"* can be ambiguous. Contextual boundaries sometimes require human review.
-2. **Cross-Section References**: Clauses that reference external exhibits or distant numbered sections (e.g., *"subject to exclusions in Section 14"*) may require whole-document reasoning beyond individual chunks.
+1. **Hedging & Contextual Jargon**: Phrases like _"from time to time"_ or _"at our sole discretion"_ can be ambiguous. Contextual boundaries sometimes require human review.
+2. **Cross-Section References**: Clauses that reference external exhibits or distant numbered sections (e.g., _"subject to exclusions in Section 14"_) may require whole-document reasoning beyond individual chunks.
 3. **Complex Nested CSS Obfuscation**: While `display:none`, `aria-hidden`, and direct color matches are stripped, complex SVG masks or canvas-rendered text require OCR.
 
 ---
@@ -232,4 +249,5 @@ npm run cypress:run
 ---
 
 ## 12. University Project Disclaimer
-This project is an academic evaluation artifact developed for university coursework (*Yazılım Gerçekleme ve Test*). It does not provide legal advice.
+
+This project is an academic evaluation artifact developed for university coursework (_Yazılım Gerçekleme ve Test_). It does not provide legal advice.
