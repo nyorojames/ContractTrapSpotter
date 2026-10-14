@@ -13,6 +13,8 @@ interface ReportData {
   documentType: string;
   disclaimer: string;
   hiddenContentCount: number;
+  captureMethod?: 'page-agent' | 'native-dom';
+  captureFallbackReason?: string;
 }
 
 /**
@@ -381,6 +383,9 @@ export function createReportPanel(
           <span>${data.clauses.length} clauses found</span>
           <span>•</span>
           <span>Type: ${data.documentType}</span>
+        </div>
+        <div class="capture-stat" data-testid="capture-method" style="margin-top: 6px; font-size: 11px; color: #555;">
+          Capture: <code>${escapeHtml(data.captureMethod || 'native-dom')}</code>${data.captureFallbackReason ? ` <span style="color:#b71c1c;">(${escapeHtml(data.captureFallbackReason)})</span>` : ''}
         </div>
       </div>
       <div class="content">

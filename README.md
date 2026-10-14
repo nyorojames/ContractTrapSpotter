@@ -18,7 +18,8 @@ flowchart TD
     subgraph Browser ["Web Page Context"]
         A["DOM & URL / Title"] --> B["Legal Page Detector<br>(detectLegalPage)"]
         B -->|Matches Heuristics| C["Floating 'Analyze' Button<br>(Shadow DOM)"]
-        C -->|User Clicks| D["DOM Extractor & Sanitizer<br>(capturePageText)"]
+        C -->|User Clicks| PA["PageAgent Prep & Allowlist Guard<br>(prepareDocumentWithPageAgent)"]
+        PA -->|Safe Accordion Expansion & getBrowserState| D["DOM Extractor & Sanitizer<br>(capturePageText)"]
         D -->|Strips hidden & comments| E["Clean Document Text<br>+ Hidden Content Telemetry"]
     end
 
@@ -56,7 +57,7 @@ flowchart TD
 ## 2. End-to-End Data Flow
 
 1. **Heuristic Detection**: When a user navigates to a web page, `detectLegalPage()` inspects the URL (e.g. `/terms`, `/privacy`, `/tos`, `/eula`), the `<title>`, and top-level headings (`h1`, `h2`). If confidence thresholds pass, a subtle floating "Analyze Terms" button is injected. Text is **never** sent to an LLM without affirmative user action.
-2. **DOM Extraction & Hidden Content Stripping**: Upon clicking "Analyze", `capturePageText()` extracts clean text while identifying and stripping deceptive elements:
+2. **PageAgent Preparation & DOM Extraction**: Upon clicking "Analyze", the content script invokes `prepareDocumentWithPageAgent()` with the user's private API key (never the demo LLM) and a strict safety allowlist guard (`isActionAllowed`). PageAgent executes a single constrained command (`"expand all collapsed sections of the terms text"`) and retrieves structured browser state. If PageAgent encounters MV3 CSP limits, it cleanly falls back to native DOM accordion expansion. `capturePageText()` then extracts clean text while identifying and stripping deceptive elements:
    - `display: none`
    - `visibility: hidden`
    - `aria-hidden="true"`
@@ -67,11 +68,11 @@ flowchart TD
    - Raw HTML comments (`<!-- ... -->`) are scanned by `scanHtmlComments()` before being removed.
 3. **Pre-LLM Injection Scan**: The extracted text is processed by `scanForInjections()`, looking for command overrides, role hijack attempts, and exfiltration commands across English, Turkish, Spanish, French, and German. Any detection generates non-suppressible UI warnings.
 4. **Boundary Isolation & Chunking**: Long documents are split into overlapping chunks (default 12,000 characters with 500-character overlap) with natural paragraph and sentence boundary snapping. Chunks are wrapped in `<UNTRUSTED_DOCUMENT>` delimiters within a strict system prompt.
-5. **LLM Provider Execution**: The request is routed via the Chrome background service worker (`src/background/index.ts`) to the configured provider (Google Gemini 2.0 Flash, OpenAI GPT-4o-mini, Anthropic Claude, or the offline deterministic `MockLLMProvider`).
+5. **LLM Provider Execution**: The request is routed via the Chrome background service worker (`src/background/index.ts`) to the configured provider (Google Gemini Flash, OpenAI GPT-4o-mini, Anthropic Claude, or the offline deterministic `MockLLMProvider`).
 6. **Strict Validation Pipeline**:
    - **Schema Validation**: Verified via Zod (`LLMResponseSchema`). Ensures the 17-item clause category enum, severity (1-5), and confidence (0-1) are adhered to.
-   - **Quote Verification**: Verifies quotes are verbatim substrings in the original document. Fabricated quotes are instantly dropped.
-   - **De-duplication**: Overlapping clauses from adjacent chunks are merged, preserving the highest confidence entry.
+    - **Quote Verification**: Verifies quotes are verbatim substrings in the clean captured text extracted from the live DOM by `capturePageText()` (with hidden content, navigation, scripts, and styles stripped). Fabricated or non-matching quotes are instantly dropped. *(Note: Offline evaluation in `eval/run.ts` bypasses the browser DOM capture path and tests directly against the static corpus in `eval/docs/*.txt`)*.
+    - **De-duplication**: Overlapping clauses from adjacent chunks are merged, preserving the highest confidence entry.
 7. **Deterministic Scoring in Code**: The LLM **never** supplies the final score. The score is computed strictly from the validated clauses:
    $$\text{Clause Contribution} = \text{Category Weight} \times \text{Severity} \times \text{Confidence}$$
    $$\text{Score} = \text{round}\left(100 \times \left(1 - e^{-\frac{\text{Raw Total}}{150}}\right)\right)$$
@@ -79,21 +80,22 @@ flowchart TD
 
 ---
 
-## 3. Role of Alibaba `page-agent`
+## 3. page-agent: What is Real and What is Not
 
-We researched the official repository (`github.com/alibaba/page-agent`, `@page-agent/core`, `@page-agent/page-controller`) to understand its real architecture.
+### What is Real (Actually Executed in Code)
+- **Direct Package Import**: `page-agent` is imported directly into `src/page-agent/integration.ts` (`import { PageAgent } from 'page-agent'`) and bundled by Vite into `dist/content.js`.
+- **Pre-Capture Expansion**: When the user clicks "Analyze", `prepareDocumentWithPageAgent()` instantiates `PageAgent` using the user's private API key configured in extension settings. It runs a single constrained command: `"expand all collapsed sections of the terms text"`.
+- **DOM State Retrieval**: It extracts structured browser state via `agent.pageController.getBrowserState()`.
+- **Read-Only Safety Allowlist**: Every command sent to `page-agent` must pass `isActionAllowed()`. Destructive verbs (`delete`, `purchase`, `submit`, `accept`, `pay`, `agree`) are rejected before reaching the library. Verified by automated tests in `tests/page-agent-safety.test.ts`.
+- **Internal Action Filters**: `agent.tools` removes script execution (`execute_javascript`) and text typing (`input_text`), while wrapping `click_element_by_index` to block clicks on elements whose text contains forbidden verbs (`delete`, `purchase`, `submit`, `pay`, etc.).
+- **Untrusted Output Pipeline**: Text returned by `page-agent` is never trusted directly; it passes through hidden-content stripping, regex injection scanning, delimiter isolation, and quote verification.
 
-### What `page-agent` is used for:
-- **DOM Hydration & Traversal**: Inspecting the browser state (`getBrowserState()`) as dehydrated, accessible text.
-- **Natural Language Page Navigation**: Interacting with dynamic pages to expand collapsed accordions ("Show more", "Read more", `<details>`), scroll down to trigger lazy loading, and follow navigation links to dedicated ToS pages.
-
-### What `page-agent` is NOT used for:
-- **Risk Assessment**: `page-agent` is never used to judge legal clauses or assign risk scores.
-- **Demo LLM**: We do not use `page-agent`'s built-in demo keys; all requests go through the user's private key or mock provider.
-- **Destructive Actions**: A strict read-only action allowlist blocks state-altering verbs:
-  - **Permitted**: `scroll`, `expand`, `show more`, `read more`, `open section`, `view full`.
-  - **Blocked**: `submit`, `purchase`, `buy`, `accept`, `agree`, `delete`, `sign up`, `checkout`, `pay`.
-- **Architectural Fallback**: A native DOM expansion fallback (`expandCollapsedSections()`) is provided in `src/page-agent/integration.ts` ensuring full functionality even if `page-agent`'s browser runtime dependencies are unavailable.
+### What is NOT Used (and Why)
+- **No Risk Judgments**: `page-agent` is **never** used to evaluate contract risk or assign scores. That is reserved for our deterministic code scoring engine.
+- **No Demo LLM**: We never load `page-agent.demo.js` or use Alibaba's public evaluation API key.
+- **No Dynamic Script Tool (`eval` Forbidden in MV3)**: In `@page-agent/page-controller` line 1995, `executeJavascript` uses `eval()`. Under Chrome Manifest V3 Content Security Policy, `eval` is forbidden (`script-src 'self'`). We never enable or execute this tool.
+- **Suppressed Built-In Panel**: `new PageAgent()` automatically mounts an uninvited floating chat panel (`Panel`) to `document.body`. We explicitly suppress it via `agent.panel.hide()` and `display: none` to prevent conflicts with our shadow DOM report overlay.
+- **Native DOM Fallback**: During real Chrome tests on sites like `adobe.com/privacy/policy.html`, `page-agent` threw `TypeError: Failed to fetch` / `InvokeError: Network request failed` (*unverified hypothesis: page CSP `connect-src 'self'` or CORS restrictions*). To guarantee resilience on any website, `prepareDocumentWithPageAgent()` catches network or runtime failures, routes LLM requests through the background worker when available, and falls back to `expandWithNativeDom()`, reporting the exact fallback reason in the UI.
 
 ---
 
@@ -209,5 +211,11 @@ Recorded video will be saved to `cypress/videos/`.
 
 ---
 
-## 11. University Project Disclaimer
+## 11. Known Issues Fixed
+
+- **Content Script Module Format (Chrome MV3)**: Chrome content scripts execute in isolated page worlds where ES module `import`/`export` syntax is forbidden (Manifest V3 `content_scripts` declarations do not support `"type": "module"`). When multi-entry bundling was used, Vite/Rollup created shared chunk files loaded via `import`, triggering `Uncaught SyntaxError: Cannot use import statement outside a module` at runtime. This has been resolved by configuring a dedicated secondary build pass (`vite.content.config.ts`) using `build.lib` with `format: 'iife'`, `inlineDynamicImports: true`, and `emptyOutDir: false`. This compiles `dist/content.js` into a completely self-contained IIFE with all dependencies (including `zod` and `page-agent`) inlined. An automated post-build check (`scripts/check-content-script.ts`) runs on every `npm run build` to guarantee zero `import` or `export` statements exist in `dist/content.js`.
+
+---
+
+## 12. University Project Disclaimer
 This project is an academic evaluation artifact developed for university coursework (*Yazılım Gerçekleme ve Test*). It does not provide legal advice.

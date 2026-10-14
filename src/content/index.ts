@@ -2,6 +2,7 @@ import { detectLegalPage } from '../capture/detect';
 import { capturePageText } from '../capture';
 import { scanForInjections, scanHtmlComments } from '../injection/scanner';
 import { createReportPanel } from '../ui/panel';
+import { prepareDocumentWithPageAgent } from '../page-agent/integration';
 
 const DISCLAIMER = 'This tool does not provide legal advice. It highlights clauses that may deserve attention; consult a qualified professional for legal questions.';
 
@@ -79,7 +80,35 @@ async function handleAnalyze(): Promise<void> {
   btn.innerHTML = '<span class="icon">⏳</span><span>Analyzing...</span>';
 
   try {
-    // Capture page text
+    let captureMethod: 'page-agent' | 'native-dom' = 'native-dom';
+    let captureFallbackReason: string | undefined;
+
+    // 1. Run injection scanner BEFORE constructing PageAgent
+    const rawVisibleText = document.body ? document.body.innerText : '';
+    const preAgentInjections = scanForInjections(rawVisibleText);
+
+    if (preAgentInjections.length > 0) {
+      console.log('[ContractTrapSpotter] (Expected security gate): injection pattern detected in page text, skipping PageAgent');
+      captureMethod = 'native-dom';
+      captureFallbackReason = 'skipped page-agent: injection pattern detected in page text';
+    } else {
+      // 2. Prepare DOM with PageAgent (or fallback if no key or failure)
+      try {
+        const stored = await chrome.storage.local.get(['llm_api_key', 'llm_provider', 'llm_model']);
+        const prepResult = await prepareDocumentWithPageAgent(
+          stored?.llm_api_key
+            ? { apiKey: stored.llm_api_key, model: stored.llm_model }
+            : undefined
+        );
+        captureMethod = prepResult.method;
+        captureFallbackReason = prepResult.fallbackReason;
+      } catch (agentErr: any) {
+        captureMethod = 'native-dom';
+        captureFallbackReason = `page-agent failed: ${String(agentErr?.message || agentErr).slice(0, 50)}`;
+      }
+    }
+
+    // 3. Capture page text (stripping hidden content, script, styles, nav)
     const capture = capturePageText();
 
     // Scan HTML comments for injections
@@ -93,6 +122,8 @@ async function handleAnalyze(): Promise<void> {
         url: capture.url,
         title: capture.title,
         hiddenContentCount: capture.hiddenContentDetected.length,
+        captureMethod,
+        captureFallbackReason,
       },
     });
 

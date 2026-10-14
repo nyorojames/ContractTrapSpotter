@@ -19,6 +19,8 @@ interface AnalyzeRequest {
     url: string;
     title: string;
     hiddenContentCount: number;
+    captureMethod?: 'page-agent' | 'native-dom';
+    captureFallbackReason?: string;
   };
 }
 
@@ -34,6 +36,8 @@ interface AnalyzeResponse {
     documentType: string;
     disclaimer: string;
     hiddenContentCount: number;
+    captureMethod: 'page-agent' | 'native-dom';
+    captureFallbackReason?: string;
   };
 }
 
@@ -159,7 +163,9 @@ async function runAnalysis(
   text: string,
   _url: string,
   _title: string,
-  hiddenContentCount: number
+  hiddenContentCount: number,
+  captureMethod: 'page-agent' | 'native-dom' = 'native-dom',
+  captureFallbackReason?: string
 ): Promise<AnalyzeResponse['data']> {
   const provider = await getProvider();
 
@@ -245,19 +251,23 @@ async function runAnalysis(
     documentType,
     disclaimer: DISCLAIMER,
     hiddenContentCount,
+    captureMethod,
+    captureFallbackReason,
   };
 }
 
 // Listen for messages from content script
 chrome.runtime.onMessage.addListener(
-  (message: AnalyzeRequest | { type: string }, _sender, sendResponse) => {
+  (message: AnalyzeRequest | { type: string; data?: any }, _sender, sendResponse) => {
     if (message.type === 'ANALYZE') {
       const req = message as AnalyzeRequest;
       runAnalysis(
         req.data.text,
         req.data.url,
         req.data.title,
-        req.data.hiddenContentCount
+        req.data.hiddenContentCount,
+        req.data.captureMethod || 'native-dom',
+        req.data.captureFallbackReason
       )
         .then(result => {
           sendResponse({ type: 'ANALYZE_RESULT', data: result } as AnalyzeResponse);
@@ -271,6 +281,57 @@ chrome.runtime.onMessage.addListener(
     if (message.type === 'GET_CONFIG') {
       getLLMConfig().then(config => {
         sendResponse({ configured: !!config });
+      });
+      return true;
+    }
+
+    if (message.type === 'PAGE_AGENT_LLM_PROXY') {
+      const { body } = message.data || {};
+      getLLMConfig().then(async (config) => {
+        if (!config) {
+          sendResponse({ type: 'PAGE_AGENT_LLM_ERROR', error: 'No API key configured for PageAgent' });
+          return;
+        }
+
+        // Route through OpenAI-compatible endpoint
+        let endpoint = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${config.apiKey}`,
+        };
+
+        if (config.provider === 'openai') {
+          endpoint = 'https://api.openai.com/v1/chat/completions';
+        }
+
+        try {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers,
+            body: typeof body === 'string' ? body : JSON.stringify(body),
+          });
+
+          const data = await res.json();
+          if (!res.ok) {
+            sendResponse({
+              type: 'PAGE_AGENT_LLM_ERROR',
+              status: res.status,
+              error: data?.error?.message || `HTTP ${res.status}`,
+              data,
+            });
+          } else {
+            sendResponse({
+              type: 'PAGE_AGENT_LLM_SUCCESS',
+              status: res.status,
+              data,
+            });
+          }
+        } catch (err: any) {
+          sendResponse({
+            type: 'PAGE_AGENT_LLM_ERROR',
+            error: err?.message || String(err),
+          });
+        }
       });
       return true;
     }
