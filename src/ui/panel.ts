@@ -15,6 +15,7 @@ interface ReportData {
   hiddenContentCount: number;
   captureMethod?: 'page-agent' | 'native-dom';
   captureFallbackReason?: string;
+  isMock?: boolean;
 }
 
 /**
@@ -383,6 +384,7 @@ export function createReportPanel(
           <span>${data.clauses.length} clauses found</span>
           <span>•</span>
           <span>Type: ${data.documentType}</span>
+          ${data.isMock ? `<span>•</span><span class="mock-badge" data-testid="mock-indicator" style="background: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">Mock LLM</span>` : ''}
         </div>
         <div class="capture-stat" data-testid="capture-method" style="margin-top: 6px; font-size: 11px; color: #555;">
           Capture: <code>${escapeHtml(data.captureMethod || 'native-dom')}</code>${data.captureFallbackReason ? ` <span style="color:#b71c1c;">(${escapeHtml(data.captureFallbackReason)})</span>` : ''}

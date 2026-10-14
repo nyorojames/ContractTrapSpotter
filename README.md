@@ -160,7 +160,7 @@ See [`SECURITY.md`](./SECURITY.md) for full audit matrix and details.
 # 1. Install dependencies
 npm install
 
-# 2. Run unit & security tests (37 tests across 6 suites)
+# 2. Run unit & security tests (46 tests across 8 suites)
 npm test
 
 # 3. Build the Chrome extension
@@ -188,18 +188,30 @@ This executes `eval/run.ts`, calculates TP, FP, FN, dropped claims, precision, r
 
 ---
 
-## 9. How to Run the Cypress Demo Video (< 90 s)
+## 9. Cypress E2E Demo (< 90 s) & Mock Mode
 
-Cypress tests load the built unpacked extension into Chromium via the `--load-extension` flag and record video execution:
+ContractTrapSpotter includes automated Cypress end-to-end specifications covering the full UI lifecycle:
+- `cypress/e2e/01_happy_path.cy.ts`: Page detection, button click, quote highlighting in page, and score calculation.
+- `cypress/e2e/02_uncertainty.cy.ts`: Unclear / ungrounded quotes resulting in dropped claims and honest `Inconclusive` score label.
+- `cypress/e2e/03_injection.cy.ts`: In-browser prompt injection detection and warning banner display.
 
+### Mock LLM Mode
+For offline demonstration and running without an active API key:
+- Toggle **Use mock LLM (for testing/demo, no API key needed)** in the extension options page (`dist/options/options.html` or `chrome.storage.local.set({ mock_llm: true })`).
+- When active, the background worker routes requests to `MockLLMProvider`, and the report panel renders a distinct **Mock LLM** badge in the stats header (`data-testid="mock-indicator"`).
+
+### Running Cypress
 ```bash
-# 1. Start the local fixture server in one terminal:
-npx tsx cypress/server.ts
+# 1. Start the local fixture server:
+npm run demo:server
+# or: npx tsx cypress/server.ts
 
-# 2. Run Cypress end-to-end tests:
-npm run cypress:run -- --browser chrome
+# 2. Run Cypress end-to-end tests in headed Chrome:
+npm run cypress:run -- --browser chrome --headed
 ```
-Recorded video will be saved to `cypress/videos/`.
+
+- **Video Location**: `cypress/videos/01_happy_path.cy.ts.mp4` (Duration: ~8 seconds, compressed with CRF 32; well under the 90-second threshold).
+- **Technical Note on Chrome Extension Automation**: When Cypress launches Chrome in automated test mode (`--enable-automation`), it hosts the target website within a sandboxed Cypress runner `<iframe>` (`.aut-iframe`). In modern Chromium/Chrome (v120+ / v155), Chrome's extension runtime attaches the unpacked extension (`--load-extension`) to the browser session, but isolates content scripts from injecting into internal automation runner iframes. In live usage outside the Cypress automation frame (e.g. loading the unpacked `dist/` into standard Chrome via `chrome://extensions`), `content.js` reliably executes on top-level web pages, injects the floating `#cts-analyze-btn`, and displays the shadow DOM report panel as verified on real-world sites like `adobe.com`.
 
 ---
 

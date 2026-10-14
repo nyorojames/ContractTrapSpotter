@@ -38,6 +38,7 @@ interface AnalyzeResponse {
     hiddenContentCount: number;
     captureMethod: 'page-agent' | 'native-dom';
     captureFallbackReason?: string;
+    isMock?: boolean;
   };
 }
 
@@ -64,15 +65,15 @@ async function getLLMConfig(): Promise<LLMConfig | null> {
 /**
  * Create the appropriate LLM provider
  */
-async function getProvider(): Promise<LLMProviderInterface> {
+async function getProvider(): Promise<{ provider: LLMProviderInterface; isMock: boolean }> {
   // Check for mock mode or unconfigured state
   const { mock_llm } = await chrome.storage.local.get('mock_llm');
   const config = await getLLMConfig();
   if (mock_llm || !config) {
     console.log('[ContractTrapSpotter] Running in Mock LLM mode (no API key required).');
-    return new MockLLMProvider();
+    return { provider: new MockLLMProvider(), isMock: true };
   }
-  return createLLMProvider(config);
+  return { provider: createLLMProvider(config), isMock: false };
 }
 
 /**
@@ -167,7 +168,7 @@ async function runAnalysis(
   captureMethod: 'page-agent' | 'native-dom' = 'native-dom',
   captureFallbackReason?: string
 ): Promise<AnalyzeResponse['data']> {
-  const provider = await getProvider();
+  const { provider, isMock } = await getProvider();
 
   // 1. Pre-LLM injection scan
   const injections = scanForInjections(text);
@@ -253,6 +254,7 @@ async function runAnalysis(
     hiddenContentCount,
     captureMethod,
     captureFallbackReason,
+    isMock,
   };
 }
 
