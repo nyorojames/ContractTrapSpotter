@@ -7,6 +7,7 @@ declare global {
   namespace Cypress {
     interface Chainable {
       injectExtension(): Chainable<void>;
+      showBanner(title: string, subtitle?: string): Chainable<void>;
     }
   }
 }
@@ -144,5 +145,37 @@ Cypress.Commands.add('injectExtension', () => {
       script.textContent = contentJs;
       doc.body.appendChild(script);
     });
+  });
+});
+
+Cypress.Commands.add('showBanner', (title: string, subtitle: string = 'Mock mode: scripted LLM output') => {
+  cy.document().then((doc) => {
+    let banner = doc.getElementById('cts-demo-banner');
+    if (!banner) {
+      banner = doc.createElement('div');
+      banner.id = 'cts-demo-banner';
+      banner.style.cssText = `
+        position: fixed;
+        top: 16px;
+        left: 20px;
+        z-index: 2147483640;
+        background: rgba(26, 26, 46, 0.95);
+        color: #ffffff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        border-left: 5px solid #1a73e8;
+        pointer-events: none;
+      `;
+      doc.body.appendChild(banner);
+    }
+    banner.innerHTML = `
+      <div style="font-size: 16px; font-weight: 700; margin-bottom: 4px; color: #ffffff;">${title}</div>
+      <div style="font-size: 12px; color: #a0aec0; display: flex; align-items: center; gap: 6px;">
+        <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#4caf50;"></span>
+        ${subtitle}
+      </div>
+    `;
   });
 });

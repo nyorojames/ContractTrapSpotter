@@ -53,10 +53,11 @@ export default defineConfig({
   video: true,
   videoCompression: 32,
   viewportWidth: 1280,
-  viewportHeight: 800,
+  viewportHeight: 720,
   defaultCommandTimeout: 10000,
   e2e: {
     baseUrl: 'http://localhost:3000',
+    specPattern: 'cypress/e2e/**/*.cy.ts',
     supportFile: 'cypress/support/e2e.ts',
     setupNodeEvents(on, config) {
       ensureFixtureServer();

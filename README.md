@@ -200,23 +200,20 @@ For offline demonstration and running without an active API key:
 - When active, the background worker routes requests to `MockLLMProvider`, and the report panel renders a distinct **Mock LLM** badge in the stats header (`data-testid="mock-indicator"`). The Cypress test harness replicates this exact mock pipeline.
 
 ### Specifications & Assertions
-All 3 specs pass and verify the core functional requirements:
-- `cypress/e2e/01_happy_path.cy.ts`: Page detection, button click, quote highlighting in page (`mark.cts-highlight`), risk score calculation (> 0), and disclaimer display.
-- `cypress/e2e/02_uncertainty.cy.ts`: Unclear / ungrounded quotes resulting in dropped claims notice and honest `Inconclusive` score label.
-- `cypress/e2e/03_injection.cy.ts`: In-browser prompt injection detection, warning banner display (`Injection Attempts Detected`), and preserving score without zeroing out.
+All 3 scenarios pass within the single merged demonstration suite ([`cypress/e2e/demo.cy.ts`](file:///c:/James/Software%20eng%20classes/3.sinif/1.sem/Yazılım%20Gerçekleme%20ve%20Test/ContractTrapSpotter/cypress/e2e/demo.cy.ts)) running at 1280x720 viewport with distinct banner captions:
+1. **Happy Path**: Page detection, button click, quote highlighting in page (`mark.cts-highlight`), deterministic risk score calculation (> 0), and disclaimer display.
+2. **Honest Uncertainty**: Unclear / ungrounded quotes resulting in dropped claims notice and honest `Inconclusive Risk` state.
+3. **Prompt Injection Defense**: In-browser prompt injection detection, warning banner display (`Injection Attempts Detected`), and preserving score without zeroing out.
 
 ### Running the Cypress Tests
 ```bash
-# Run all 3 Cypress specs:
+# Run the E2E demonstration spec:
 npm run cypress:run
 ```
 *(The Cypress configuration automatically spins up the local fixture HTTP server on `http://localhost:3000` if not already running, and closes it upon test completion).*
 
-### Video Recordings (< 90 s Total)
-- `cypress/videos/01_happy_path.cy.ts.mp4`: ~1.5 s duration (85.6 kB)
-- `cypress/videos/02_uncertainty.cy.ts.mp4`: ~0.7 s duration (38.1 kB)
-- `cypress/videos/03_injection.cy.ts.mp4`: ~0.5 s duration (36.7 kB)
-- **Total Combined Duration**: ~2.7 seconds (compressed with CRF 32; well below the 90-second threshold).
+### Video Recording (Target: 60 - 85 s)
+- `cypress/videos/demo.cy.ts.mp4`: **75.00 seconds** exact duration via `ffprobe` (3 passing scenarios, explicit readable pacing, compressed with CRF 32; comfortably within the 60–85 second requirement).
 
 ---
 
