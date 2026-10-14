@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "document": "dropbox_tos",
+    "category": "jurisdiction_governing_law",
+    "quote": "These Terms will be governed by California law except for its conflicts of laws principles.",
+    "human_label": "not_risky"
+  },
+  {
+    "id": 2,
+    "document": "zoom_tos",
+    "category": "liability_limitation",
+    "quote": "Under no circumstances will Zoom be liable in any way for any data or other content viewed while using the Services, including any errors or omissions in any such data or other content, or any loss or damage of any kind incurred as a result of the use of, access to, or denial of access to any data or other content.",
+    "human_label": "genuine_missing_from_gold"
+  },
+  {
+    "id": 3,
+    "document": "spotify_tos",
+    "category": "hard_to_cancel",
+    "quote": "If you subscribe to Advantageous Use, you agree that your right to cancel the Paid Subscription for which you received Advantageous Use will expire fourteen (14) days after you start Advantageous Use.",
+    "human_label": "genuine_missing_from_gold"
+  },
+  {
+    "id": 4,
+    "document": "adobe_terms",
+    "category": "tracking_profiling",
+    "quote": "In exchange for your use of a Beta Version, you agree that Adobe may collect data, including crash data, regarding your use of the Beta Version and analyze your Content, including human review, to improve our Services and Software and to personalize your experience",
+    "human_label": "genuine_missing_from_gold"
+  },
+  {
+    "id": 5,
+    "document": "adobe_terms",
+    "category": "forced_arbitration",
+    "quote": "The arbitrator, and not any federal, state, or local court or agency, shall have the exclusive authority to resolve any dispute relating to the interpretation, applicability or enforceability of the Terms or formation of the Terms",
+    "human_label": "genuine_missing_from_gold"
+  },
+  {
+    "id": 6,
+    "document": "spotify_tos",
+    "category": "no_refund",
+    "quote": "You agree that if you or Spotify breach these Terms or Spotify suspends your access to the Spotify Service, Spotify will have no liability or responsibility to you under applicable law (unless otherwise stated in these Terms) and will not refund any payments you have already made.",
+    "human_label": "genuine_missing_from_gold"
+  },
+  {
+    "id": 7,
+    "document": "zoom_tos",
+    "category": "other",
+    "quote": "You grant Zoom permission and the right to (i) identify you as a customer and to use your logo across Zoom marketing materials (e.g., the Zoom Website, emails, presentations, brochures), and (ii) develop content around your experience as a Zoom customer (e.g., a written case study or video case study).",
+    "human_label": "not_risky"
+  },
+  {
+    "id": 8,
+    "document": "zoom_tos",
+    "category": "unilateral_changes",
+    "quote": "Zoom, in its sole discretion, will (i) calculate the amount of Taxes and Fees due, and (ii) change such amounts without notice to you.",
+    "human_label": "genuine_missing_from_gold"
+  },
+  {
+    "id": 9,
+    "document": "zoom_tos",
+    "category": "other",
+    "quote": "To the extent permitted by applicable Law, and notwithstanding any other statute of limitations, any claim or cause of action under this Agreement (with the exception of disputes under Section 27.2(2)) must be filed within one (1) year after such claim or cause of action arose, or else that claim or cause of action will be permanently barred.",
+    "human_label": "genuine_missing_from_gold"
+  },
+  {
+    "id": 10,
+    "document": "spotify_tos",
+    "category": "other",
+    "quote": "Except where such restrictions are prohibited by applicable law, all claims under these terms must be initiated within one (1) year from the date on which the claimant first learned, or reasonably should have learned, of the act, omission or fault giving rise to the claim...",
+    "human_label": "genuine_missing_from_gold"
+  },
+  {
+    "id": 11,
+    "document": "zoom_tos",
+    "category": "account_termination_without_notice",
+    "quote": "if any failure to pay Charges continues for five (5) calendar days following the due date, Zoom may terminate, suspend, or disconnect your Services immediately and without prior notice.",
+    "human_label": "genuine_missing_from_gold"
+  },
+  {
+    "id": 12,
+    "document": "spotify_tos",
+    "category": "other",
+    "quote": "All arbitrations must be initiated by posting a claim within ONE (1) YEAR from the date on which the claimant first learned, or reasonably should have learned, of the act, omission or fault giving rise to the claim, and no remedy shall be available for any claim not posted within that period.",
+    "human_label": "genuine_missing_from_gold"
+  },
+  {
+    "id": 13,
+    "document": "dropbox_tos",
+    "category": "no_refund",
+    "quote": "Dropbox does not provide refunds if we suspend or terminate your access to the Services, unless required by law.",
+    "human_label": "genuine_missing_from_gold"
+  },
+  {
+    "id": 14,
+    "document": "adobe_terms",
+    "category": "other",
+    "quote": "By using our Services and Software, you authorize Adobe to transfer your personal information across national borders and to other countries where Adobe and its partners operate.",
+    "human_label": "genuine_missing_from_gold"
+  },
+  {
+    "id": 15,
+    "document": "zoom_tos",
+    "category": "unilateral_changes",
+    "quote": "We may assign our rights or transfer any or all of our obligations under this Agreement at any time, without prior notice to you, (i) in the event of a merger, acquisition, or sale of all or substantially all of our assets, or (ii) to our affiliate.",
+    "human_label": "not_risky"
+  },
+  {
+    "id": 16,
+    "document": "adobe_terms",
+    "category": "other",
+    "quote": "At the end of this 30-day transition period, we reserve the right to delete your Content. You should download any Content that you have stored in the Services before your license ends.",
+    "human_label": "genuine_missing_from_gold"
+  },
+  {
+    "id": 17,
+    "document": "zoom_tos",
+    "category": "liability_limitation",
+    "quote": "(iv) in Section 26, that you release Zoom from, and waive your right to recover from Zoom, certain damages.",
+    "human_label": "not_risky"
+  },
+  {
+    "id": 18,
+    "document": "adobe_terms",
+    "category": "liability_limitation",
+    "quote": "Unless stated in the Product Specific Terms, the Services and Software are provided “AS-IS.” To the maximum extent permitted by law, Adobe, its affiliates, and third-party providers (“Covered Parties”) disclaim all warranties, express or implied, including the implied warranties of non-infringement, merchantability, and fitness for a particular purpose.",
+    "human_label": "not_risky"
+  },
+  {
+    "id": 19,
+    "document": "netflix_terms",
+    "category": "unilateral_changes",
+    "quote": "You authorize us to charge any Payment Method associated with your account in case your primary Payment Method is declined or no longer available to us for payment of your subscription fee.",
+    "human_label": "wrong_category"
+  },
+  {
+    "id": 20,
+    "document": "zoom_tos",
+    "category": "forced_arbitration",
+    "quote": "You and Zoom hereby waive any constitutional and statutory rights to sue in court and have a trial in front of a judge or a jury. You and Zoom are instead electing that all Disputes shall be resolved by arbitration under this Arbitration Agreement",
+    "human_label": "genuine_missing_from_gold"
+  }
+]
