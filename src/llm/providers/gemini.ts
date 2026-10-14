@@ -8,11 +8,11 @@ export class GeminiProvider implements LLMProviderInterface {
   }
 
   async call(request: LLMRequest): Promise<string> {
-    const model = this.config.model || 'gemini-2.0-flash';
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.config.apiKey}`;
+    const model = this.config.model || 'gemini-flash-lite-latest';
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
     const body = {
-      system_instruction: {
+      systemInstruction: {
         parts: [{ text: request.systemPrompt }],
       },
       contents: [
@@ -29,7 +29,10 @@ export class GeminiProvider implements LLMProviderInterface {
 
     const response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': this.config.apiKey,
+      },
       body: JSON.stringify(body),
     });
 

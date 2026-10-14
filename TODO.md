@@ -30,11 +30,12 @@
 - [x] Vitest injection tests (100% pass)
 - [x] SECURITY.md with honest vulnerability evaluation
 
-## Phase 4: Eval ✅
-- [x] 5 real ToS documents (Spotify, Netflix, Adobe, Zoom, Dropbox)
-- [x] Gold annotations with reviewer tracking
-- [x] Eval runner (eval/run.ts)
-- [x] EVAL.md with metrics, failure analysis & dropped claims report
+## Phase 4: Real LLM Evaluation ✅
+- [x] Full authentic corpus (Spotify, Netflix, Adobe, Zoom, Dropbox; 40,047 words)
+- [x] Gold annotations drafted from full texts with exact quotes, verified 100% verbatim by code
+- [x] Real Google Gemini Flash eval runner with exponential backoff on 429 and strict match rule (>=60% overlap or containment)
+- [x] Two complete evaluation runs executed to quantify run-to-run non-deterministic variance
+- [x] EVAL.md rewritten with honest TP/FP/FN metrics, qualitative case studies, dropped claims & failure analysis
 
 ## Phase 5: Cypress Demo ✅
 - [x] Local fixture pages (tos_page, ambiguous_page, injection_page)

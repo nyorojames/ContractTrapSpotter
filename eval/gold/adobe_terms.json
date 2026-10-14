@@ -2,55 +2,45 @@
   "document_id": "adobe_terms",
   "document_name": "Adobe General Terms of Use",
   "source_url": "https://www.adobe.com/legal/terms.html",
-  "retrieval_date": "2025-10-12",
-  "annotated_by": "Team Evaluation Annotator (University Project Pair)",
-  "reviewed_by_user": false,
-  "user_review_notes": "Pending human evaluator verification",
+  "retrieval_date": "2026-10-14",
+  "drafted_by": "Claude Opus 4.6",
+  "reviewed_by_human": false,
+  "notes": "",
   "clauses": [
     {
-      "id": "gold-adb-1",
-      "category": "auto_renewal",
-      "quote": "Paid subscriptions renew automatically for successive periods (such as monthly or annually) at the then-current rate unless you cancel before your renewal date."
-    },
-    {
-      "id": "gold-adb-2",
-      "category": "hard_to_cancel",
-      "quote": "If you cancel an annual plan paid monthly after the initial 14-day cancellation window, you may be charged an early termination fee equal to 50% of the remaining contract obligation."
-    },
-    {
-      "id": "gold-adb-3",
-      "category": "no_refund",
-      "quote": "We do not provide refunds for fees incurred prior to cancellation."
-    },
-    {
-      "id": "gold-adb-4",
-      "category": "content_license_grant",
-      "quote": "you grant us a non-exclusive, worldwide, royalty-free, sublicensable, and transferable license to use, reproduce, publicly display, distribute, modify, and translate your Content. This includes analyzing your Content using machine learning techniques to train our generative artificial intelligence models"
-    },
-    {
-      "id": "gold-adb-5",
+      "id": "gold-adobe-1",
       "category": "unilateral_changes",
-      "quote": "We may modify, update, or discontinue the Services or Software (including any portions or features) at any time, without liability to you or anyone else."
+      "severity": 4,
+      "quote": "We may modify, update, or discontinue the Services and Software (including any portions or features), which modifications, updates or discontinuations may, for clarity, be detrimental or result in a diminishment of value to you, at any time, without liability to you or anyone else.",
+      "rationale": "Allows Adobe to diminish service value or discontinue features without liability."
     },
     {
-      "id": "gold-adb-6",
+      "id": "gold-adobe-2",
       "category": "account_termination_without_notice",
-      "quote": "We may immediately terminate or suspend your access to the Services or Software at any time, without prior notice, if you breach any provision of these Terms or if Adobe decides to discontinue the Service"
+      "severity": 4,
+      "quote": "Unless stated in the Product Specific Terms, we may at any time immediately terminate or suspend your right to use and access the Services and Software if in Adobe's sole discretion:",
+      "rationale": "Allows immediate termination or suspension of user access based on sole discretion."
     },
     {
-      "id": "gold-adb-7",
-      "category": "liability_limitation",
-      "quote": "Adobe's aggregate liability under these terms shall not exceed the amount paid by you in the preceding twelve months or $100, whichever is greater."
-    },
-    {
-      "id": "gold-adb-8",
+      "id": "gold-adobe-3",
       "category": "forced_arbitration",
-      "quote": "Any dispute or claim arising out of or relating to these Terms or the Services will be settled by binding arbitration administered by the American Arbitration Association."
+      "severity": 5,
+      "quote": "If any dispute related to your Claim is not resolved within 30 days of receipt, any resulting legal actions must be resolved through either small claims court or final and binding arbitration, including any dispute about whether arbitration is required for the dispute, subject to the exceptions set forth below.",
+      "rationale": "Mandatory binding arbitration for disputes not resolved within 30 days."
     },
     {
-      "id": "gold-adb-9",
+      "id": "gold-adobe-4",
       "category": "class_action_waiver",
-      "quote": "You waive any right to pursue or participate in any class action, collective action, or private attorney general representative action against Adobe."
+      "severity": 5,
+      "quote": "You may only resolve disputes with us on an individual basis, and you may not bring a claim as a plaintiff or a class member in a class, consolidated, or representative action.",
+      "rationale": "Prohibits class, consolidated, or representative action disputes against Adobe."
+    },
+    {
+      "id": "gold-adobe-5",
+      "category": "jurisdiction_governing_law",
+      "severity": 3,
+      "quote": "the Terms are governed by, and construed and interpreted in accordance with, the laws of the State of California, U.S.A., unless preempted by U.S. federal law, without regard to conflict of law rules.",
+      "rationale": "Forces governing jurisdiction to California state law regardless of consumer location."
     }
   ]
 }

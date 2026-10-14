@@ -2,40 +2,45 @@
   "document_id": "netflix_terms",
   "document_name": "Netflix Terms of Use",
   "source_url": "https://help.netflix.com/legal/termsofuse",
-  "retrieval_date": "2025-10-11",
-  "annotated_by": "Team Evaluation Annotator (University Project Pair)",
-  "reviewed_by_user": false,
-  "user_review_notes": "Pending human evaluator verification",
+  "retrieval_date": "2026-10-14",
+  "drafted_by": "Claude Opus 4.6",
+  "reviewed_by_human": false,
+  "notes": "",
   "clauses": [
     {
-      "id": "gold-net-1",
+      "id": "gold-netflix-1",
       "category": "auto_renewal",
-      "quote": "Your Netflix membership will continue and automatically renew each month until terminated."
+      "severity": 3,
+      "quote": "Unless you cancel your subscription before your billing date, you authorize us to charge the subscription fee for the next billing cycle to your Payment Method (see \"Cancellation\" below).",
+      "rationale": "Authorizes automatic recurring billing cycle charges unless canceled prior to billing date."
     },
     {
-      "id": "gold-net-2",
+      "id": "gold-netflix-2",
       "category": "no_refund",
-      "quote": "Payments are nonrefundable and we do not provide refunds or credits for any partial membership periods or unwatched Netflix content."
+      "severity": 4,
+      "quote": "To the extent permitted by the applicable law, payments are non-refundable and we do not provide refunds or credits for any partial subscription periods or unused Netflix content.",
+      "rationale": "Payments non-refundable with zero refunds or credits for partial periods or unused access."
     },
     {
-      "id": "gold-net-3",
+      "id": "gold-netflix-3",
       "category": "unilateral_changes",
-      "quote": "We reserve the right to change our subscription plans or adjust pricing for our service or any components thereof in any manner and at any time as we may determine in our sole and absolute discretion."
+      "severity": 3,
+      "quote": "We may change our subscription plans and the price of our service from time to time. We will notify you at least one month before any price changes or changes to your subscription plan will become effective.",
+      "rationale": "Netflix reserves right to alter subscription tiers and pricing unilaterally."
     },
     {
-      "id": "gold-net-4",
-      "category": "tracking_profiling",
-      "quote": "We collect information regarding your viewing activities, search queries, interactions with customer service, and device information. We use this information for behavioral profiling, algorithm training"
+      "id": "gold-netflix-4",
+      "category": "liability_limitation",
+      "severity": 4,
+      "quote": "You waive all special, indirect and consequential damages against us.",
+      "rationale": "Consumer explicitly waives rights to seek special, indirect, or consequential damages."
     },
     {
-      "id": "gold-net-5",
-      "category": "forced_arbitration",
-      "quote": "you and Netflix agree that any dispute, claim or controversy arising out of or relating in any way to the Netflix service, these Terms of Use and this Arbitration Agreement, shall be determined by binding arbitration"
-    },
-    {
-      "id": "gold-net-6",
+      "id": "gold-netflix-5",
       "category": "class_action_waiver",
-      "quote": "YOU AND NETFLIX AGREE THAT EACH MAY BRING CLAIMS AGAINST THE OTHER ONLY IN YOUR OR ITS INDIVIDUAL CAPACITY, AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS OR REPRESENTATIVE PROCEEDING."
+      "severity": 5,
+      "quote": "WHERE PERMITTED UNDER THE APPLICABLE LAW, YOU AND NETFLIX AGREE THAT EACH MAY BRING CLAIMS AGAINST THE OTHER ONLY IN YOUR OR ITS INDIVIDUAL CAPACITY, AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS OR REPRESENTATIVE PROCEEDING.",
+      "rationale": "Disallows class or representative proceedings against Netflix."
     }
   ]
 }

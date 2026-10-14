@@ -1,51 +1,46 @@
 {
   "document_id": "zoom_tos",
-  "document_name": "Zoom Terms of Service",
+  "document_name": "Zoom Terms of Services",
   "source_url": "https://explore.zoom.us/en/terms/",
-  "retrieval_date": "2025-10-12",
-  "annotated_by": "Team Evaluation Annotator (University Project Pair)",
-  "reviewed_by_user": false,
-  "user_review_notes": "Pending human evaluator verification",
+  "retrieval_date": "2026-10-14",
+  "drafted_by": "Claude Opus 4.6",
+  "reviewed_by_human": false,
+  "notes": "",
   "clauses": [
     {
-      "id": "gold-zm-1",
-      "category": "account_termination_without_notice",
-      "quote": "Zoom may terminate this Agreement or suspend your access to the Service immediately and without notice if you fail to comply with any provision of this Agreement"
-    },
-    {
-      "id": "gold-zm-2",
-      "category": "content_license_grant",
-      "quote": "you grant Zoom a perpetual, worldwide, non-exclusive, royalty-free license to redistribute, publish, copy, and prepare derivative works of Customer Content"
-    },
-    {
-      "id": "gold-zm-3",
-      "category": "broad_data_collection",
-      "quote": "You agree that Zoom may access, use, collect, create, and process Service Generated Data and telemetry for any purpose, including algorithm development and artificial intelligence model training."
-    },
-    {
-      "id": "gold-zm-4",
-      "category": "auto_renewal",
-      "quote": "All subscription plans renew automatically at the expiration of the subscription term for an equivalent term, at Zoom's then-current list prices, unless you provide written notice of non-renewal at least thirty (30) days prior to the expiration date."
-    },
-    {
-      "id": "gold-zm-5",
+      "id": "gold-zoom-1",
       "category": "no_refund",
-      "quote": "Fees are non-refundable regardless of whether you actively utilize the purchased licenses."
+      "severity": 4,
+      "quote": "You agree that all payments are non-cancelable for the Initial Subscription Term or the then-current Renewal Term, as applicable, and are final and non-refundable, unless otherwise agreed to by Zoom, required by Law, or set forth in your Order Form.",
+      "rationale": "Payments are strictly non-cancelable and non-refundable for the entire term."
     },
     {
-      "id": "gold-zm-6",
+      "id": "gold-zoom-2",
       "category": "unilateral_changes",
-      "quote": "Zoom reserves the right to modify or discontinue any part of the Service, or update these Terms, at any time without prior notice."
+      "severity": 3,
+      "quote": "Zoom may make modifications, deletions, and additions to this Agreement (“Changes”) from time to time in accordance with this Section 15.1.",
+      "rationale": "Unilateral right to alter or add to the contract terms."
     },
     {
-      "id": "gold-zm-7",
+      "id": "gold-zoom-3",
       "category": "forced_arbitration",
-      "quote": "All disputes arising out of or related to this Agreement must be resolved by individual final and binding arbitration under the JAMS Comprehensive Arbitration Rules."
+      "severity": 5,
+      "quote": "You agree to resolve certain disputes with Zoom through binding arbitration (“Arbitration Agreement”). Arbitration means that an arbitrator, and not a judge or a jury, will decide the dispute.",
+      "rationale": "Requires binding arbitration before an arbitrator instead of judge or jury trial."
     },
     {
-      "id": "gold-zm-8",
+      "id": "gold-zoom-4",
       "category": "class_action_waiver",
-      "quote": "BOTH PARTIES WAIVE ANY RIGHT TO JURY TRIAL AND AGREE TO BRING DISPUTES SOLELY IN AN INDIVIDUAL CAPACITY AND NOT AS A CLASS ACTION PLAINTIFF OR MEMBER."
+      "severity": 5,
+      "quote": "The parties expressly waive the right to bring or participate in any kind of class, collective, or mass action, private attorney general action, or any other representative action.",
+      "rationale": "Explicit waiver of class, collective, mass, and representative action rights."
+    },
+    {
+      "id": "gold-zoom-5",
+      "category": "liability_limitation",
+      "severity": 4,
+      "quote": "ZOOM AND ITS AFFILIATES AND EACH OF THEIR LICENSORS, AND SUPPLIERS WILL NOT BE LIABLE FOR ANY: SPECIAL, INCIDENTAL, INDIRECT, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES;",
+      "rationale": "Total exclusion of special, indirect, consequential, and punitive damages."
     }
   ]
 }

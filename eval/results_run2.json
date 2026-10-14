@@ -1,0 +1,671 @@
+{
+  "runId": "Run-2",
+  "runDate": "2026-10-14T07:47:23.414Z",
+  "provider": "Google Gemini",
+  "model": "gemini-flash-lite-latest",
+  "totalLlmCalls": 29,
+  "totalRetries": 0,
+  "totalSchemaFailures": 0,
+  "totalAnalysisFailures": 0,
+  "totalGold": 27,
+  "totalExtracted": 89,
+  "totalDropped": 14,
+  "totalTp": 22,
+  "totalFp": 53,
+  "totalFn": 5,
+  "microPrecision": 0.29333333333333333,
+  "microRecall": 0.8148148148148148,
+  "microF1": 0.43137254901960786,
+  "macroPrecision": 0.33137973137973137,
+  "macroRecall": 0.8133333333333332,
+  "macroF1": 0.46278673271808285,
+  "docResults": [
+    {
+      "docId": "adobe_terms",
+      "documentName": "Adobe General Terms of Use",
+      "wordCount": 11648,
+      "totalGold": 5,
+      "totalExtracted": 22,
+      "droppedClaims": 4,
+      "verifiedExtracted": 18,
+      "tp": 4,
+      "fp": 14,
+      "fn": 1,
+      "precision": 0.2222222222222222,
+      "recall": 0.8,
+      "f1": 0.3478260869565218,
+      "score": 88,
+      "riskLabel": "High",
+      "llmCalls": 8,
+      "retries": 0,
+      "schemaFailures": 0,
+      "analysisFailures": 0,
+      "tpMatches": [
+        {
+          "goldId": "gold-adobe-5",
+          "goldQuote": "the Terms are governed by, and construed and interpreted in accordance with, the laws of the State of California, U.S.A., unless preempted by U.S. federal law, without regard to conflict of law rules.",
+          "predQuote": "If you reside in North America (inclusive of the United States, Canada, Mexico, United States territories and possessions, and United States military bases, wherever located), your relationship is with Adobe Inc., a United States company, and the Terms are governed by, and construed and interpreted in accordance with, the laws of the State of California, U.S.A.",
+          "category": "jurisdiction_governing_law",
+          "overlap": 60
+        },
+        {
+          "goldId": "gold-adobe-2",
+          "goldQuote": "Unless stated in the Product Specific Terms, we may at any time immediately terminate or suspend your right to use and access the Services and Software if in Adobe's sole discretion:",
+          "predQuote": "Unless stated in the Product Specific Terms, we may at any time immediately terminate or suspend your right to use and access the Services and Software if in Adobe's sole discretion...",
+          "category": "account_termination_without_notice",
+          "overlap": 99
+        },
+        {
+          "goldId": "gold-adobe-3",
+          "goldQuote": "If any dispute related to your Claim is not resolved within 30 days of receipt, any resulting legal actions must be resolved through either small claims court or final and binding arbitration, including any dispute about whether arbitration is required for the dispute, subject to the exceptions set forth below.",
+          "predQuote": "If any dispute related to your Claim is not resolved within 30 days of receipt, any resulting legal actions must be resolved through either small claims court or final and binding arbitration...",
+          "category": "forced_arbitration",
+          "overlap": 98
+        },
+        {
+          "goldId": "gold-adobe-4",
+          "goldQuote": "You may only resolve disputes with us on an individual basis, and you may not bring a claim as a plaintiff or a class member in a class, consolidated, or representative action.",
+          "predQuote": "You may only resolve disputes with us on an individual basis, and you may not bring a claim as a plaintiff or a class member in a class, consolidated, or representative action.",
+          "category": "class_action_waiver",
+          "overlap": 100
+        }
+      ],
+      "fpClauses": [
+        {
+          "quote": "We may make changes to the Terms from time to time ranging from cleaning up typos to changes in policy. If we make any important changes, we will notify you.",
+          "category": "unilateral_changes",
+          "explanation": "The company reserves the right to modify the terms of service over time."
+        },
+        {
+          "quote": "By using our Services and Software, you authorize Adobe to transfer your personal information across national borders and to other countries where Adobe and its partners operate.",
+          "category": "other",
+          "explanation": "Allows the company to transfer your personal data internationally across borders."
+        },
+        {
+          "quote": "At the end of this 30-day transition period, we reserve the right to delete your Content. You should download any Content that you have stored in the Services before your license ends.",
+          "category": "other",
+          "explanation": "The service reserves the right to permanently delete your stored content 30 days after your subscription or license expires."
+        },
+        {
+          "quote": "At any time prior to or during the free, Complimentary Services, or trial period, Adobe may, in its sole discretion, terminate that access without prior notice and without any liability to you",
+          "category": "account_termination_without_notice",
+          "explanation": "Adobe can terminate your free trial or complimentary access at any time without prior notice or liability."
+        },
+        {
+          "quote": "Adobe may, in its sole discretion, terminate that access without prior notice and without any liability to you, to the extent permitted under applicable law, for any reason, including to prevent abuse of the free, Complimentary Services, or trial access.",
+          "category": "account_termination_without_notice",
+          "explanation": "Adobe reserves the right to terminate free or trial access immediately without prior notice or liability."
+        },
+        {
+          "quote": "In exchange for your use of a Beta Version, you agree that Adobe may collect data, including crash data, regarding your use of the Beta Version and analyze your Content, including human review, to improve our Services and Software and to personalize your experience",
+          "category": "tracking_profiling",
+          "explanation": "Using beta features permits Adobe to perform human review of your content and collect detailed usage data."
+        },
+        {
+          "quote": "you agree that we are free to use the Feedback for our business purposes, including by incorporation into the Services and Software without any payment or attribution or other obligation to you.",
+          "category": "other",
+          "explanation": "Any feedback, ideas, or suggestions you provide can be used by the company commercially without payment or attribution to you."
+        },
+        {
+          "quote": "You, as a Personal User or a Business User, are responsible for all activity that occurs via your account even if that activity is not by you or is without your knowledge or consent.",
+          "category": "liability_limitation",
+          "explanation": "You are held fully liable for all actions taken through your account, even if unauthorized or done without your knowledge."
+        },
+        {
+          "quote": "If you don't sign into your account periodically, we reserve the right to assume your account is inactive, and you agree that we may permanently delete your Content stored in the account or close your account entirely.",
+          "category": "other",
+          "explanation": "Free accounts that are deemed inactive may be closed and their stored content permanently deleted."
+        },
+        {
+          "quote": "Unless stated in the Product Specific Terms, the Services and Software are provided “AS-IS.” To the maximum extent permitted by law, Adobe, its affiliates, and third-party providers (“Covered Parties”) disclaim all warranties, express or implied...",
+          "category": "liability_limitation",
+          "explanation": "The service is provided without warranties of any kind, meaning you bear the risk if it fails to work properly or causes data loss."
+        },
+        {
+          "quote": "Our total liability in any matter arising out of or related to the Terms is limited to the greater of (A) US $100; or (B) the aggregate amount that you paid for access to the Services and Software during the three-month period preceding the event giving rise to the liability.",
+          "category": "liability_limitation",
+          "explanation": "The company's financial liability for any issues is strictly capped at a very low amount (typically $100 or 3 months of fees)."
+        },
+        {
+          "quote": "The arbitrator, and not any federal, state, or local court or agency, shall have the exclusive authority to resolve any dispute relating to the interpretation, applicability or enforceability of the Terms or formation of the Terms",
+          "category": "forced_arbitration",
+          "explanation": "Disputes must be settled through binding arbitration rather than in court, limiting your legal recourse."
+        },
+        {
+          "quote": "We may modify, update, or discontinue the Services and Software (including any portions or features), which modifications, updates or discontinuations may, for clarity, be detrimental or result in a diminishment of value to you, at any time, without liability to you or anyone else.",
+          "category": "liability_limitation",
+          "explanation": "The company can modify or discontinue services, even to your detriment, without liability."
+        },
+        {
+          "quote": "If you reside in the Americas, JAMS will administer the arbitration in Santa Clara County, California, USA",
+          "category": "jurisdiction_governing_law",
+          "explanation": "Arbitration or legal proceedings must take place in a specific, distant location depending on your region."
+        }
+      ],
+      "fnClauses": [
+        {
+          "goldId": "gold-adobe-1",
+          "quote": "We may modify, update, or discontinue the Services and Software (including any portions or features), which modifications, updates or discontinuations may, for clarity, be detrimental or result in a diminishment of value to you, at any time, without liability to you or anyone else.",
+          "category": "unilateral_changes",
+          "rationale": "Allows Adobe to diminish service value or discontinue features without liability."
+        }
+      ],
+      "droppedExamples": [
+        {
+          "quote": "If you received an “Entitlement”... from an organization or group... (A) you may provide such Business with the ability to access, use, remove, retain, and control your Business Profile and all Content therein",
+          "category": "other"
+        },
+        {
+          "quote": "you grant us a non-exclusive, worldwide, royalty-free license to do the following with your Cloud Content: reproduce, distribute, create derivative works, publicly display, publicly perform, and sublicense the foregoing rights to third parties acting on our behalf",
+          "category": "content_license_grant"
+        },
+        {
+          "quote": "Solely for the purpose of our internal analysis of how you use our Services and Software and the characteristics of your Content (such as file type and structural attributes) (together, “Content Analytics”), you grant us a non-exclusive, worldwide, royalty-free license to do the following to improve our Services and Software: reproduce, create derivative works, and sublicense...",
+          "category": "content_license_grant"
+        },
+        {
+          "quote": "You will indemnify us and our subsidiaries, affiliates, officers, agents, employees, partners, and licensors from any claim(s), demand(s), loss(es), or damage(s), including reasonable attorneys’ fees, arising out of, or related to: (A) your Content... (B) your use of the Services and Software... (C) your interactions with any other users... or (D) your violation of the Terms",
+          "category": "other"
+        }
+      ]
+    },
+    {
+      "docId": "dropbox_tos",
+      "documentName": "Dropbox Terms of Service",
+      "wordCount": 4292,
+      "totalGold": 6,
+      "totalExtracted": 14,
+      "droppedClaims": 0,
+      "verifiedExtracted": 14,
+      "tp": 6,
+      "fp": 8,
+      "fn": 0,
+      "precision": 0.42857142857142855,
+      "recall": 1,
+      "f1": 0.6,
+      "score": 84,
+      "riskLabel": "High",
+      "llmCalls": 4,
+      "retries": 0,
+      "schemaFailures": 0,
+      "analysisFailures": 0,
+      "tpMatches": [
+        {
+          "goldId": "gold-dropbox-1",
+          "goldQuote": "We’ll automatically bill you from the date you convert to a Paid Account and on each periodic renewal until cancellation.",
+          "predQuote": "We’ll automatically bill you from the date you convert to a Paid Account and on each periodic renewal until cancellation.",
+          "category": "auto_renewal",
+          "overlap": 100
+        },
+        {
+          "goldId": "gold-dropbox-2",
+          "goldQuote": "Refunds are only issued in limited circumstances or if required by law.",
+          "predQuote": "Refunds are only issued in limited circumstances or if required by law.",
+          "category": "no_refund",
+          "overlap": 100
+        },
+        {
+          "goldId": "gold-dropbox-3",
+          "goldQuote": "We may change the fees in effect on renewal of your subscription, to reflect factors such as changes to our product offerings, changes to our business, or changes in economic conditions.",
+          "predQuote": "We may change the fees in effect on renewal of your subscription, to reflect factors such as changes to our product offerings, changes to our business, or changes in economic conditions.",
+          "category": "unilateral_changes",
+          "overlap": 100
+        },
+        {
+          "goldId": "gold-dropbox-4",
+          "goldQuote": "OTHER THAN FOR THE TYPES OF LIABILITY WE CANNOT LIMIT BY LAW (AS DESCRIBED IN THIS SECTION), WE LIMIT OUR LIABILITY TO YOU TO THE GREATER OF $20 USD OR 100% OF ANY AMOUNT YOU'VE PAID UNDER YOUR CURRENT SERVICE PLAN WITH DROPBOX.",
+          "predQuote": "OTHER THAN FOR THE TYPES OF LIABILITY WE CANNOT LIMIT BY LAW (AS DESCRIBED IN THIS SECTION), WE LIMIT OUR LIABILITY TO YOU TO THE GREATER OF $20 USD OR 100% OF ANY AMOUNT YOU'VE PAID UNDER YOUR CURRENT SERVICE PLAN WITH DROPBOX.",
+          "category": "liability_limitation",
+          "overlap": 100
+        },
+        {
+          "goldId": "gold-dropbox-5",
+          "goldQuote": "You and Dropbox agree to resolve any claims relating to or arising out of these Terms or the Services through final and binding individual arbitration by a single arbitrator, except as set forth under the “Exceptions to Agreement to Arbitrate” below.",
+          "predQuote": "You and Dropbox agree to resolve any claims relating to or arising out of these Terms or the Services through final and binding individual arbitration by a single arbitrator",
+          "category": "forced_arbitration",
+          "overlap": 100
+        },
+        {
+          "goldId": "gold-dropbox-6",
+          "goldQuote": "NO CLASS OR REPRESENTATIVE ACTIONS. You may only resolve disputes with us on an individual basis, and may not bring a claim as a plaintiff or a class member in a class, consolidated, or representative action.",
+          "predQuote": "You may only resolve disputes with us on an individual basis, and may not bring a claim as a plaintiff or a class member in a class, consolidated, or representative action.",
+          "category": "class_action_waiver",
+          "overlap": 100
+        }
+      ],
+      "fpClauses": [
+        {
+          "quote": "To provide these and other features, Dropbox accesses, stores, and scans Your Stuff. You give us permission to do those things, and this permission extends to our affiliates and trusted third parties we work with.",
+          "category": "third_party_data_sharing",
+          "explanation": "You grant permission for Dropbox, its affiliates, and trusted third parties to access, store, and scan your personal content."
+        },
+        {
+          "quote": "Please note that Dropbox Team accounts are subject to your organization's control. Your administrators may be able to access, disclose, restrict, or remove information in or from your Dropbox Team account.",
+          "category": "other",
+          "explanation": "If your account is associated with an organization, administrators gain broad control and access to your files and information."
+        },
+        {
+          "quote": "Dropbox does not provide refunds if we suspend or terminate your access to the Services, unless required by law.",
+          "category": "no_refund",
+          "explanation": "You may lose access to your account and pre-paid fees without receiving a refund if your account is terminated."
+        },
+        {
+          "quote": "THE SERVICES ARE PROVIDED \"AS IS.\" WE ALSO DISCLAIM ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.",
+          "category": "liability_limitation",
+          "explanation": "The service is provided without warranties of any kind, shifting the risk of performance entirely to the user."
+        },
+        {
+          "quote": "NO CLASS OR REPRESENTATIVE ACTIONS. You may only resolve disputes with us on an individual basis, and may not bring a claim as a plaintiff or a class member in a class, consolidated, or representative action.",
+          "category": "class_action_waiver",
+          "explanation": "This clause prevents you from joining a class action lawsuit against the company, requiring any disputes to be resolved individually."
+        },
+        {
+          "quote": "These Terms will be governed by California law except for its conflicts of laws principles.",
+          "category": "jurisdiction_governing_law",
+          "explanation": "Any legal disputes will be governed by California law, which may not be your local jurisdiction."
+        },
+        {
+          "quote": "We may revise these Terms to better reflect: changes to the law, new regulatory requirements, or improvements or enhancements made to our Services.",
+          "category": "unilateral_changes",
+          "explanation": "The company reserves the right to modify the terms of the agreement in the future, with continued use constituting acceptance."
+        },
+        {
+          "quote": "These updated terms will be effective no less than 30 days from when we notify you.",
+          "category": "unilateral_changes",
+          "explanation": "The company reserves the right to modify the terms of service with advance notice, and continued use constitutes acceptance."
+        }
+      ],
+      "fnClauses": [],
+      "droppedExamples": []
+    },
+    {
+      "docId": "netflix_terms",
+      "documentName": "Netflix Terms of Use",
+      "wordCount": 3493,
+      "totalGold": 5,
+      "totalExtracted": 10,
+      "droppedClaims": 1,
+      "verifiedExtracted": 9,
+      "tp": 5,
+      "fp": 4,
+      "fn": 0,
+      "precision": 0.5555555555555556,
+      "recall": 1,
+      "f1": 0.7142857142857143,
+      "score": 66,
+      "riskLabel": "High",
+      "llmCalls": 3,
+      "retries": 0,
+      "schemaFailures": 0,
+      "analysisFailures": 0,
+      "tpMatches": [
+        {
+          "goldId": "gold-netflix-1",
+          "goldQuote": "Unless you cancel your subscription before your billing date, you authorize us to charge the subscription fee for the next billing cycle to your Payment Method (see \"Cancellation\" below).",
+          "predQuote": "Unless you cancel your subscription before your billing date, you authorize us to charge the subscription fee for the next billing cycle to your Payment Method (see \"Cancellation\" below).",
+          "category": "auto_renewal",
+          "overlap": 100
+        },
+        {
+          "goldId": "gold-netflix-2",
+          "goldQuote": "To the extent permitted by the applicable law, payments are non-refundable and we do not provide refunds or credits for any partial subscription periods or unused Netflix content.",
+          "predQuote": "To the extent permitted by the applicable law, payments are non-refundable and we do not provide refunds or credits for any partial subscription periods or unused Netflix content.",
+          "category": "no_refund",
+          "overlap": 100
+        },
+        {
+          "goldId": "gold-netflix-3",
+          "goldQuote": "We may change our subscription plans and the price of our service from time to time. We will notify you at least one month before any price changes or changes to your subscription plan will become effective.",
+          "predQuote": "We may change our subscription plans and the price of our service from time to time. We will notify you at least one month before any price changes or changes to your subscription plan will become effective.",
+          "category": "unilateral_changes",
+          "overlap": 100
+        },
+        {
+          "goldId": "gold-netflix-4",
+          "goldQuote": "You waive all special, indirect and consequential damages against us.",
+          "predQuote": "The Netflix service is provided \"as is\" and without warranty or condition. In particular, our service may not be uninterrupted or error-free. You waive all special, indirect and consequential damages against us.",
+          "category": "liability_limitation",
+          "overlap": 100
+        },
+        {
+          "goldId": "gold-netflix-5",
+          "goldQuote": "WHERE PERMITTED UNDER THE APPLICABLE LAW, YOU AND NETFLIX AGREE THAT EACH MAY BRING CLAIMS AGAINST THE OTHER ONLY IN YOUR OR ITS INDIVIDUAL CAPACITY, AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS OR REPRESENTATIVE PROCEEDING.",
+          "predQuote": "YOU AND NETFLIX AGREE THAT EACH MAY BRING CLAIMS AGAINST THE OTHER ONLY IN YOUR OR ITS INDIVIDUAL CAPACITY, AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS OR REPRESENTATIVE PROCEEDING.",
+          "category": "class_action_waiver",
+          "overlap": 100
+        }
+      ],
+      "fpClauses": [
+        {
+          "quote": "We may terminate or restrict your use of our service if you violate these Terms of Use or are engaged in illegal or fraudulent use of the service.",
+          "category": "account_termination_without_notice",
+          "explanation": "Netflix reserves the right to terminate or restrict service access if you violate the terms or engage in fraudulent use."
+        },
+        {
+          "quote": "Offer eligibility is determined by Netflix at its sole discretion and we reserve the right to revoke an Offer and put your account on hold in the event that we determine you are not eligible.",
+          "category": "other",
+          "explanation": "Netflix retains sole discretion over promotional offer eligibility and can revoke offers or hold accounts."
+        },
+        {
+          "quote": "We may, from time to time, change these Terms of Use. In case of material changes, we will notify you at least one month before such changes apply to you.",
+          "category": "unilateral_changes",
+          "explanation": "The company can alter the terms of use at any time, requiring you to cancel if you do not accept the new terms."
+        },
+        {
+          "quote": "While we will make reasonable efforts to notify you in advance, to the extent permitted by applicable law, we will not be held liable should such events occur.",
+          "category": "liability_limitation",
+          "explanation": "The company disclaims liability for various disruptions and events beyond their control, limiting your ability to seek damages if service is interrupted."
+        }
+      ],
+      "fnClauses": [],
+      "droppedExamples": [
+        {
+          "quote": "Netflix is free to use any comments, information, ideas, concepts, reviews, or techniques or any other material contained in any communication you may send to us (\"Feedback\")... worldwide and in perpetuity without further compensation, acknowledgement or payment to you",
+          "category": "content_license_grant"
+        }
+      ]
+    },
+    {
+      "docId": "spotify_tos",
+      "documentName": "Spotify Terms and Conditions of Use",
+      "wordCount": 6745,
+      "totalGold": 6,
+      "totalExtracted": 17,
+      "droppedClaims": 4,
+      "verifiedExtracted": 13,
+      "tp": 4,
+      "fp": 9,
+      "fn": 2,
+      "precision": 0.3076923076923077,
+      "recall": 0.6666666666666666,
+      "f1": 0.42105263157894735,
+      "score": 73,
+      "riskLabel": "High",
+      "llmCalls": 5,
+      "retries": 0,
+      "schemaFailures": 0,
+      "analysisFailures": 0,
+      "tpMatches": [
+        {
+          "goldId": "gold-spotify-3",
+          "goldQuote": "Spotify may change the price of Paid Subscriptions, including recurring subscription fees, Prepaid Periods (for periods not yet paid for), or Codes (as defined above), from time to time and will notify you of any price changes a reasonable amount of time in advance.",
+          "predQuote": "Spotify may change the price of Paid Subscriptions, including recurring subscription fees, Prepaid Periods (for periods not yet paid for), or Codes (as defined above), from time to time and will notify you of any price changes a reasonable amount of time in advance.",
+          "category": "unilateral_changes",
+          "overlap": 100
+        },
+        {
+          "goldId": "gold-spotify-1",
+          "goldQuote": "Unless otherwise specified (for example, if you signed up for a Prepaid Period), Paid Subscriptions continue indefinitely until cancelled. You will be billed again on the first day of each billing period; you will make the relevant payment and authorize us (or the applicable third party if you signed up through a third party) to charge the then-current subscription fee to your payment method.",
+          "predQuote": "Unless otherwise specified (for example, if you signed up for a Prepaid Period), Paid Subscriptions continue indefinitely until cancelled.",
+          "category": "auto_renewal",
+          "overlap": 100
+        },
+        {
+          "goldId": "gold-spotify-2",
+          "goldQuote": "Unless otherwise stated in these Terms, we do not offer refunds or credits for partial subscription periods.",
+          "predQuote": "Unless otherwise stated in these Terms, we do not offer refunds or credits for partial subscription periods.",
+          "category": "no_refund",
+          "overlap": 100
+        },
+        {
+          "goldId": "gold-spotify-6",
+          "goldQuote": "TO THE EXTENT PERMITTED BY APPLICABLE LAW, YOU AND SPOTIFY AGREE THAT YOU MAY ONLY STAND AS EACH OTHER IN ANY CASE THAT APPEARS TO BE A CLASSIFICATION OR REPRESENTATIVE ACTION, AND NOT AS A PLAINTIFF OR PARTY TO A CLASSIFICATION ACTION.",
+          "predQuote": "TO THE EXTENT PERMITTED BY APPLICABLE LAW, YOU AND SPOTIFY AGREE THAT YOU MAY ONLY STAND AS EACH OTHER IN ANY CASE THAT APPEARS TO BE A CLASSIFICATION OR REPRESENTATIVE ACTION, AND NOT AS A PLAINTIFF OR PARTY TO A CLASSIFICATION ACTION.",
+          "category": "class_action_waiver",
+          "overlap": 100
+        }
+      ],
+      "fpClauses": [
+        {
+          "quote": "Spotify is not obligated to provide any particular content through the Spotify Service, and Spotify or its respective owners may remove access to certain songs, videos, podcasts, audiobooks, and other Content without prior notice.",
+          "category": "other",
+          "explanation": "Spotify can remove content and features at any time without prior notice."
+        },
+        {
+          "quote": "If you do not cancel the Paid Subscription before Advantageous Use expires, you will lose your right to cancel and you authorize Spotify to automatically charge you the agreed amount every month until you cancel the Paid Subscription.",
+          "category": "auto_renewal",
+          "explanation": "Your subscription automatically renews and charges your account monthly if you do not cancel before the promotional period ends."
+        },
+        {
+          "quote": "Spotify reserves the right to remove or block access to any User Content for any reason or no reason. Spotify may take such actions without prior notice to you.",
+          "category": "account_termination_without_notice",
+          "explanation": "Spotify can remove your content at any time without providing prior notice."
+        },
+        {
+          "quote": "Accordingly, you grant Spotify a non-exclusive, transferable, sublicensable, royalty-free, fully paid, irrevocable, and worldwide license to reproduce, make public, perform and display, translate, modify, create derivative works from, and distribute any of your User Content",
+          "category": "content_license_grant",
+          "explanation": "You grant Spotify a broad, worldwide, irrevocable license to use, modify, and distribute any content you post."
+        },
+        {
+          "quote": "To the extent possible and permitted under applicable law, you also agree to waive and forgo any “moral rights” or equivalent rights, including your right to be identified as the author of any User Content",
+          "category": "other",
+          "explanation": "You waive your moral rights, meaning you give up the right to be credited as the author of your content."
+        },
+        {
+          "quote": "You agree that if you or Spotify breach these Terms or Spotify suspends your access to the Spotify Service, Spotify will have no liability or responsibility to you under applicable law (unless otherwise stated in these Terms) and will not refund any payments you have already made.",
+          "category": "no_refund",
+          "explanation": "Spotify states they will not issue refunds for any payments already made if your access is suspended or terminated due to a breach."
+        },
+        {
+          "quote": "Except where such restrictions are prohibited by applicable law, all claims under these terms must be initiated within one (1) year from the date on which the claimant first learned, or reasonably should have learned, of the act, omission or fault giving rise to the claim...",
+          "category": "other",
+          "explanation": "You have a restricted timeframe of only one year to initiate a claim or arbitration against Spotify regarding any issues."
+        },
+        {
+          "quote": "All arbitrations between you and Spotify shall be finalized by one or more judges appointed in accordance with the International Chamber of Commerce (\"ICC\") Rules of Arbitration (\"ICC Rules\") in effect at the relevant date, as amended by these Agreements, and shall be administered by the ICC International Arbitration Tribunal.",
+          "category": "forced_arbitration",
+          "explanation": "Disputes must be resolved through binding arbitration administered by the ICC rather than through the public court system."
+        },
+        {
+          "quote": "All arbitrations must be initiated by posting a claim within ONE (1) YEAR from the date on which the claimant first learned, or reasonably should have learned, of the act, omission or fault giving rise to the claim, and no remedy shall be available for any claim not posted within that period.",
+          "category": "other",
+          "explanation": "You have a shortened one-year window to initiate claims, which limits the time usually allowed by law."
+        }
+      ],
+      "fnClauses": [
+        {
+          "goldId": "gold-spotify-4",
+          "quote": "Spotify, its officers, shareholders, employees, representatives, directors, affiliates, subsidiaries, successors, officers, suppliers, or licensors shall in no event be liable for: (1) any indirect, special, incidental, punitive, exemplary, or consequential damages of any kind",
+          "category": "liability_limitation",
+          "rationale": "Broad disclaimer of all indirect, special, incidental, or consequential damages."
+        },
+        {
+          "goldId": "gold-spotify-5",
+          "quote": "You and Spotify agree that any dispute, claim, or conflict between you and Spotify arising in any way in connection with these Agreements or your relationship with Spotify as a user of the Service (whether based on contract, tort, law, fraud, misrepresentation, or any other legal theory, regardless of whether the claim arises during or after the term of the Agreements) shall be resolved by binding individual arbitration.",
+          "category": "forced_arbitration",
+          "rationale": "Mandates binding individual arbitration for virtually all disputes, waiving court access."
+        }
+      ],
+      "droppedExamples": [
+        {
+          "quote": "Spotify, its officers, shareholders, employees, representatives, directors, affiliates, subsidiaries, successors, officers, suppliers, or licensors shall in no event be liable for: (1) any indirect, special, incidental, punitive, exemplary, or consequential damages of any kind; (2) any loss of use, loss of data, loss of business, or loss of profits... or (3) total liability for all claims relating to the Spotify Service... up to (a) the amount you paid to Spotify within twelve months prior to the first claim, or (b) $30.00, whichever is higher.",
+          "category": "liability_limitation"
+        },
+        {
+          "quote": "You agree to indemnify and hold harmless Spotify from any and all damages, losses, and reasonable expenses (including reasonable attorneys' fees and costs) that Spotify may suffer arising from or in connection with: (1) your breach of these Terms... (2) any User Content that you post or otherwise contribute; (3) any activity that you engage in on or through the Spotify Service; and (4) your violation of any law or the rights of a third party.",
+          "category": "other"
+        },
+        {
+          "quote": "You and Spotify agree that any dispute, claim, or conflict between you and Spotify arising in any way in connection with these Agreements or your relationship with Spotify... shall be resolved by binding individual arbitration.",
+          "category": "forced_arbitration"
+        },
+        {
+          "quote": "We may make changes to these Terms (including other Spotify terms and conditions referenced herein) from time to time by notifying you of such changes (before the changes become effective) through reasonable means... Your continued use of the Spotify Service after any changes to these Terms constitutes your acceptance of those changes.",
+          "category": "unilateral_changes"
+        }
+      ]
+    },
+    {
+      "docId": "zoom_tos",
+      "documentName": "Zoom Terms of Services",
+      "wordCount": 13749,
+      "totalGold": 5,
+      "totalExtracted": 26,
+      "droppedClaims": 5,
+      "verifiedExtracted": 21,
+      "tp": 3,
+      "fp": 18,
+      "fn": 2,
+      "precision": 0.14285714285714285,
+      "recall": 0.6,
+      "f1": 0.23076923076923073,
+      "score": 95,
+      "riskLabel": "High",
+      "llmCalls": 9,
+      "retries": 0,
+      "schemaFailures": 0,
+      "analysisFailures": 0,
+      "tpMatches": [
+        {
+          "goldId": "gold-zoom-1",
+          "goldQuote": "You agree that all payments are non-cancelable for the Initial Subscription Term or the then-current Renewal Term, as applicable, and are final and non-refundable, unless otherwise agreed to by Zoom, required by Law, or set forth in your Order Form.",
+          "predQuote": "You agree that all payments are non-cancelable for the Initial Subscription Term or the then-current Renewal Term, as applicable, and are final and non-refundable, unless otherwise agreed to by Zoom, required by Law, or set forth in your Order Form.",
+          "category": "no_refund",
+          "overlap": 100
+        },
+        {
+          "goldId": "gold-zoom-3",
+          "goldQuote": "You agree to resolve certain disputes with Zoom through binding arbitration (“Arbitration Agreement”). Arbitration means that an arbitrator, and not a judge or a jury, will decide the dispute.",
+          "predQuote": "You agree to resolve certain disputes with Zoom through binding arbitration (“Arbitration Agreement”). Arbitration means that an arbitrator, and not a judge or a jury, will decide the dispute.",
+          "category": "forced_arbitration",
+          "overlap": 100
+        },
+        {
+          "goldId": "gold-zoom-4",
+          "goldQuote": "The parties expressly waive the right to bring or participate in any kind of class, collective, or mass action, private attorney general action, or any other representative action.",
+          "predQuote": "The parties expressly waive the right to bring or participate in any kind of class, collective, or mass action, private attorney general action, or any other representative action.",
+          "category": "class_action_waiver",
+          "overlap": 100
+        }
+      ],
+      "fpClauses": [
+        {
+          "quote": "Zoom may, in its sole discretion, (i) discontinue the Services, or (ii) modify the features or functionality of the Services or Software.",
+          "category": "unilateral_changes",
+          "explanation": "Zoom reserves the right to discontinue or modify the features of the services at its sole discretion without prior notice."
+        },
+        {
+          "quote": "Under no circumstances will Zoom be liable in any way for any data or other content viewed while using the Services, including any errors or omissions in any such data or other content, or any loss or damage of any kind incurred as a result of the use of, access to, or denial of access to any data or other content.",
+          "category": "liability_limitation",
+          "explanation": "Zoom disclaims liability for any loss, damage, errors, or omissions related to data or content viewed while using the services."
+        },
+        {
+          "quote": "Zoom may investigate any complaints and violations that come to our attention and may take any action, in its sole discretion, including issuing warnings, suspending or disconnecting the Services or Software, removing the applicable data or other content, terminating accounts or End User profiles, or taking other reasonable actions in its sole discretion.",
+          "category": "account_termination_without_notice",
+          "explanation": "Zoom retains the right to suspend, disconnect, or terminate accounts and user profiles in its sole discretion."
+        },
+        {
+          "quote": "You grant Zoom a perpetual, worldwide, non-exclusive, royalty-free, sublicensable, and transferable license and all other rights required or necessary for the Permitted Uses.",
+          "category": "content_license_grant",
+          "explanation": "You grant Zoom a perpetual and worldwide license to use your content for certain permitted purposes."
+        },
+        {
+          "quote": "Zoom may change prices for the Services at any time, in its sole discretion.",
+          "category": "unilateral_changes",
+          "explanation": "Zoom reserves the right to alter its pricing at any time at its own discretion."
+        },
+        {
+          "quote": "Your access may be terminated without warning if it comes to our attention that you are under the legal age to enter into this Agreement or are otherwise ineligible to enter into this Agreement or to use the Services and Software.",
+          "category": "account_termination_without_notice",
+          "explanation": "Your account may be terminated without prior warning if eligibility requirements are not met."
+        },
+        {
+          "quote": "Unless your Order Form expressly states otherwise or applicable Law prohibits automatic renewal, each Renewal Term for the Services will begin automatically at the end of the then-current Initial Subscription Term or Renewal Term, as the case may be, unless either party provides written notice of termination or modification of the Services provided under such Order Form (i) at least thirty (30) calendar days prior to the commencement of the next Renewal Term, or (ii) within the notice period required by applicable Law",
+          "category": "auto_renewal",
+          "explanation": "Subscriptions automatically renew unless you cancel at least 30 days before the renewal date."
+        },
+        {
+          "quote": "Zoom, in its sole discretion, will (i) calculate the amount of Taxes and Fees due, and (ii) change such amounts without notice to you.",
+          "category": "unilateral_changes",
+          "explanation": "Zoom reserves the right to change tax and fee amounts without providing notice to you."
+        },
+        {
+          "quote": "if any failure to pay Charges continues for five (5) calendar days following the due date, Zoom may terminate, suspend, or disconnect your Services immediately and without prior notice.",
+          "category": "account_termination_without_notice",
+          "explanation": "Zoom can immediately cut off your services without warning if a payment is 5 days late."
+        },
+        {
+          "quote": "Additionally, Zoom may terminate this Agreement, for any reason or no reason, upon thirty (30) business days’ advance notice.",
+          "category": "account_termination_without_notice",
+          "explanation": "Zoom can terminate your agreement for any reason or no reason at all."
+        },
+        {
+          "quote": "you will be responsible for all costs and expenses incurred by Zoom in connection with such collection activity, including collection fees, court costs, and attorneys’ fees. You further agree that, to the extent not prohibited by applicable Law, Zoom may collect interest at the lesser of 1.5% per month",
+          "category": "other",
+          "explanation": "You are responsible for collection costs, legal fees, and high interest if you fail to pay."
+        },
+        {
+          "quote": "Zoom is not responsible for, and Zoom hereby disclaims any liability for, any act or omission of any provider of Third-Party Offerings or the operation of any Third-Party Offerings",
+          "category": "liability_limitation",
+          "explanation": "Zoom disclaims all liability for third-party integrations or services used in connection with their platform."
+        },
+        {
+          "quote": "YOU AGREE THAT THE SERVICES AND SOFTWARE ARE PROVIDED “AS IS” AND ZOOM, ITS AFFILIATES, SUPPLIERS, AND LICENSORS EXPRESSLY DISCLAIM ALL WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING ANY WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.",
+          "category": "liability_limitation",
+          "explanation": "The provider offers the software strictly on an \"as is\" basis without any warranties, placing all risks regarding quality, performance, and accuracy entirely on the user."
+        },
+        {
+          "quote": "You and Zoom hereby waive any constitutional and statutory rights to sue in court and have a trial in front of a judge or a jury. You and Zoom are instead electing that all Disputes shall be resolved by arbitration under this Arbitration Agreement",
+          "category": "forced_arbitration",
+          "explanation": "This clause forces users to resolve disputes through binding arbitration instead of utilizing the court system."
+        },
+        {
+          "quote": "You and Zoom agree that, except as specified in Section 27.7 below, each of us may bring claims against the other only on an individual basis and not on a class, collective, representative, or mass action basis",
+          "category": "class_action_waiver",
+          "explanation": "Users give up their right to participate in class action lawsuits against the company."
+        },
+        {
+          "quote": "any claim or cause of action under this Agreement (with the exception of disputes under Section 27.2(2)) must be filed within one (1) year after such claim or cause of action arose, or else that claim or cause of action will be permanently barred.",
+          "category": "other",
+          "explanation": "This clause drastically reduces the timeframe you have to bring a legal claim against the company to just one year."
+        },
+        {
+          "quote": "You agree that Zoom may obtain and aggregate technical and other data about your and your End Users use of the Services and Software on a de-identified or anonymized basis (“Aggregated Anonymous Data”), and Zoom may use the Aggregated Anonymous Data in accordance with applicable Law, including to analyze, develop, improve, support, and operate the Services and Software",
+          "category": "broad_data_collection",
+          "explanation": "The company reserves the right to collect and indefinitely use de-identified technical and usage data for various business purposes."
+        },
+        {
+          "quote": "You grant Zoom permission and the right to (i) identify you as a customer and to use your logo across Zoom marketing materials (e.g., the Zoom Website, emails, presentations, brochures)",
+          "category": "other",
+          "explanation": "You automatically grant the company the right to use your name and logo for marketing purposes without additional compensation."
+        }
+      ],
+      "fnClauses": [
+        {
+          "goldId": "gold-zoom-2",
+          "quote": "Zoom may make modifications, deletions, and additions to this Agreement (“Changes”) from time to time in accordance with this Section 15.1.",
+          "category": "unilateral_changes",
+          "rationale": "Unilateral right to alter or add to the contract terms."
+        },
+        {
+          "goldId": "gold-zoom-5",
+          "quote": "ZOOM AND ITS AFFILIATES AND EACH OF THEIR LICENSORS, AND SUPPLIERS WILL NOT BE LIABLE FOR ANY: SPECIAL, INCIDENTAL, INDIRECT, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES;",
+          "category": "liability_limitation",
+          "rationale": "Total exclusion of special, indirect, consequential, and punitive damages."
+        }
+      ],
+      "droppedExamples": [
+        {
+          "quote": "Zoom may make modifications, deletions, and additions to this Agreement (“Changes”) from time to time in accordance with this Section 15.1. ... If you continue to use the Services after the effective date of the Changes, then you agree to the revised terms and conditions.",
+          "category": "unilateral_changes"
+        },
+        {
+          "quote": "You hereby unconditionally and irrevocably assign and agree to assign to Zoom on your behalf... all right, title, and interest in and to the Feedback, including all Proprietary Rights relating thereto.",
+          "category": "other"
+        },
+        {
+          "quote": "ZOOM AND ITS AFFILIATES AND EACH OF THEIR LICENSORS, AND SUPPLIERS WILL NOT BE LIABLE FOR ANY: SPECIAL, INCIDENTAL, INDIRECT, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES... DAMAGES, IN THE AGGREGATE FOR ALL CLAIMS ARISING OUT OF OR RELATED TO THIS AGREEMENT... EXCEEDING THE AMOUNT ACTUALLY PAID BY YOU FOR THE SERVICES (IF ANY) IN THE TWELVE (12) MONTHS PRECEDING THE EVENT",
+          "category": "liability_limitation"
+        },
+        {
+          "quote": "you agree to indemnify, defend, and hold Zoom and its affiliates and each of our licensors and suppliers (“Indemnified Parties”) harmless... from any third party allegation, claim, proceeding, liability, damage, or cost (including reasonable attorneys’ fees) arising out of or related to (i) your or your End User’s use of the Services or Software",
+          "category": "other"
+        },
+        {
+          "quote": "The laws of the State of California, U.S.A., regardless of conflict of laws principles, govern all matters arising out of or relating to this Agreement... the parties consent to the exclusive jurisdiction and venue of the state courts located in and serving Santa Clara County, California",
+          "category": "jurisdiction_governing_law"
+        }
+      ]
+    }
+  ]
+}

@@ -1,51 +1,53 @@
 {
   "document_id": "dropbox_tos",
   "document_name": "Dropbox Terms of Service",
-  "source_url": "https://www.dropbox.com/terms",
-  "retrieval_date": "2025-10-13",
-  "annotated_by": "Team Evaluation Annotator (University Project Pair)",
-  "reviewed_by_user": false,
-  "user_review_notes": "Pending human evaluator verification",
+  "source_url": "https://www.dropbox.com/terms2026",
+  "retrieval_date": "2026-10-14",
+  "drafted_by": "Claude Opus 4.6",
+  "reviewed_by_human": false,
+  "notes": "",
   "clauses": [
     {
-      "id": "gold-dbx-1",
-      "category": "content_license_grant",
-      "quote": "You grant Dropbox a worldwide, royalty-free license to host, run, copy, and distribute Your Stuff strictly as necessary for us to provide, improve, and protect the Services."
-    },
-    {
-      "id": "gold-dbx-2",
+      "id": "gold-dropbox-1",
       "category": "auto_renewal",
-      "quote": "You will be automatically billed from the date you convert to a Paid Account and on each periodic renewal until cancellation. If you are on an annual plan, we will automatically renew your subscription each year until you cancel."
+      "severity": 3,
+      "quote": "We’ll automatically bill you from the date you convert to a Paid Account and on each periodic renewal until cancellation.",
+      "rationale": "Recurring billing continues on automatic periodic renewal until user acts to cancel."
     },
     {
-      "id": "gold-dbx-3",
+      "id": "gold-dropbox-2",
       "category": "no_refund",
-      "quote": "Refunds are only issued if required by law."
+      "severity": 4,
+      "quote": "Refunds are only issued in limited circumstances or if required by law.",
+      "rationale": "Strict refund limitations restrict consumer fee recoupment."
     },
     {
-      "id": "gold-dbx-4",
-      "category": "account_termination_without_notice",
-      "quote": "We reserve the right to suspend or terminate your access to the Services with or without notice if you violate these Terms"
-    },
-    {
-      "id": "gold-dbx-5",
+      "id": "gold-dropbox-3",
       "category": "unilateral_changes",
-      "quote": "We may revise these Terms from time to time to better reflect changes to the law, new regulatory requirements, or improvements to our Services."
+      "severity": 3,
+      "quote": "We may change the fees in effect on renewal of your subscription, to reflect factors such as changes to our product offerings, changes to our business, or changes in economic conditions.",
+      "rationale": "Dropbox reserves unilateral right to adjust fee schedule upon renewal."
     },
     {
-      "id": "gold-dbx-6",
+      "id": "gold-dropbox-4",
       "category": "liability_limitation",
-      "quote": "DROPBOX'S AGGREGATE LIABILITY FOR ALL CLAIMS RELATING TO THE SERVICES SHALL NOT EXCEED THE GREATER OF $20 OR THE AMOUNTS PAID BY YOU TO DROPBOX IN THE PAST 12 MONTHS."
+      "severity": 4,
+      "quote": "OTHER THAN FOR THE TYPES OF LIABILITY WE CANNOT LIMIT BY LAW (AS DESCRIBED IN THIS SECTION), WE LIMIT OUR LIABILITY TO YOU TO THE GREATER OF $20 USD OR 100% OF ANY AMOUNT YOU'VE PAID UNDER YOUR CURRENT SERVICE PLAN WITH DROPBOX.",
+      "rationale": "Caps maximum company liability to greater of $20 or past amounts paid."
     },
     {
-      "id": "gold-dbx-7",
+      "id": "gold-dropbox-5",
       "category": "forced_arbitration",
-      "quote": "You and Dropbox agree to resolve any claims relating to these Terms or the Services through final and binding arbitration"
+      "severity": 5,
+      "quote": "You and Dropbox agree to resolve any claims relating to or arising out of these Terms or the Services through final and binding individual arbitration by a single arbitrator, except as set forth under the “Exceptions to Agreement to Arbitrate” below.",
+      "rationale": "Mandates individual binding arbitration by a single arbitrator."
     },
     {
-      "id": "gold-dbx-8",
+      "id": "gold-dropbox-6",
       "category": "class_action_waiver",
-      "quote": "YOU MAY ONLY RESOLVE DISPUTES WITH US ON AN INDIVIDUAL BASIS, AND MAY NOT BRING A CLAIM AS A PLAINTIFF OR A CLASS MEMBER IN A CLASS, CONSOLIDATED, OR REPRESENTATIVE ACTION."
+      "severity": 5,
+      "quote": "NO CLASS OR REPRESENTATIVE ACTIONS. You may only resolve disputes with us on an individual basis, and may not bring a claim as a plaintiff or a class member in a class, consolidated, or representative action.",
+      "rationale": "Bars class and representative proceedings against Dropbox."
     }
   ]
 }

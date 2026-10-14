@@ -1,19 +1,53 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { GeminiProvider } from '../src/llm/providers/gemini';
+import { buildSystemPrompt, buildUserPrompt } from '../src/llm/prompt';
 import { LLMResponseSchema } from '../src/schema';
 import { verifyQuote, normalizeText } from '../src/verify/quote-verify';
 import { computeScore } from '../src/score';
-import { scanForInjections } from '../src/injection/scanner';
+import { chunkText } from '../src/capture/chunker';
 import type { Clause, ClauseCategory } from '../src/schema';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, '..');
+
+// Read environment variables manually from .env
+function loadEnv(): Record<string, string> {
+  const envPath = path.join(rootDir, '.env');
+  if (!fs.existsSync(envPath)) {
+    throw new Error('Missing .env file. Real eval requires GEMINI_API_KEY in .env');
+  }
+  const content = fs.readFileSync(envPath, 'utf8');
+  const env: Record<string, string> = {};
+  for (const line of content.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eqIdx = trimmed.indexOf('=');
+    if (eqIdx !== -1) {
+      const key = trimmed.substring(0, eqIdx).trim();
+      const val = trimmed.substring(eqIdx + 1).trim();
+      env[key] = val;
+    }
+  }
+  return env;
+}
+
+const env = loadEnv();
+const apiKey = env.GEMINI_API_KEY;
+if (!apiKey || apiKey.length < 5) {
+  throw new Error('GEMINI_API_KEY is missing or invalid in .env. Refusing to run eval with mock.');
+}
+
+const modelName = env.LLM_MODEL || 'gemini-flash-lite-latest';
 
 interface GoldClause {
   id: string;
   category: ClauseCategory;
+  severity: number;
   quote: string;
+  rationale?: string;
 }
 
 interface GoldFile {
@@ -21,162 +55,237 @@ interface GoldFile {
   document_name: string;
   source_url: string;
   retrieval_date: string;
-  annotated_by: string;
-  reviewed_by_user: boolean;
-  user_review_notes: string;
+  drafted_by: string;
+  reviewed_by_human: boolean;
+  notes: string;
   clauses: GoldClause[];
 }
 
-interface DocEvalResult {
+export interface DocEvalMetrics {
   docId: string;
-  name: string;
+  documentName: string;
+  wordCount: number;
   totalGold: number;
-  totalPredicted: number;
+  totalExtracted: number;
+  droppedClaims: number;
+  verifiedExtracted: number;
   tp: number;
   fp: number;
   fn: number;
-  dropped: number;
   precision: number;
   recall: number;
   f1: number;
   score: number;
   riskLabel: string;
-  missedExamples: { goldQuote: string; category: string; reason: string }[];
-  falseAlarmExamples: { predQuote: string; category: string; reason: string }[];
+  llmCalls: number;
+  retries: number;
+  schemaFailures: number;
+  analysisFailures: number;
+  tpMatches: { goldId: string; goldQuote: string; predQuote: string; category: string; overlap: number }[];
+  fpClauses: { quote: string; category: string; explanation: string }[];
+  fnClauses: { goldId: string; quote: string; category: string; rationale?: string }[];
+  droppedExamples: { quote: string; category: string }[];
+}
+
+export interface EvalRunSummary {
+  runId: string;
+  runDate: string;
+  provider: string;
+  model: string;
+  totalLlmCalls: number;
+  totalRetries: number;
+  totalSchemaFailures: number;
+  totalAnalysisFailures: number;
+  totalGold: number;
+  totalExtracted: number;
+  totalDropped: number;
+  totalTp: number;
+  totalFp: number;
+  totalFn: number;
+  microPrecision: number;
+  microRecall: number;
+  microF1: number;
+  macroPrecision: number;
+  macroRecall: number;
+  macroF1: number;
+  docResults: DocEvalMetrics[];
 }
 
 /**
- * Check if two quotes have significant overlap (> 30% word or char overlap)
+ * Longest Contiguous Common Substring length between two normalized strings.
  */
-function quotesOverlap(a: string, b: string): boolean {
-  const normA = normalizeText(a);
-  const normB = normalizeText(b);
+function longestCommonSubstringLength(a: string, b: string): number {
+  if (!a || !b) return 0;
+  const n = a.length;
+  const m = b.length;
+  const dp = new Uint16Array(m + 1);
+  let maxLen = 0;
 
-  if (normA.includes(normB) || normB.includes(normA)) return true;
+  for (let i = 1; i <= n; i++) {
+    let prev = 0;
+    for (let j = 1; j <= m; j++) {
+      const temp = dp[j];
+      if (a[i - 1] === b[j - 1]) {
+        dp[j] = prev + 1;
+        if (dp[j] > maxLen) maxLen = dp[j];
+      } else {
+        dp[j] = 0;
+      }
+      prev = temp;
+    }
+  }
+  return maxLen;
+}
 
-  const wordsA = new Set(normA.split(/\s+/).filter(w => w.length > 3));
-  const wordsB = new Set(normB.split(/\s+/).filter(w => w.length > 3));
+/**
+ * Exact Match rule specified for eval:
+ * A prediction is a TP only if:
+ * 1. category is identical
+ * 2. AND extracted quote contains, or is contained in, the gold quote,
+ *    OR they overlap by >= 60% of the shorter one's characters.
+ */
+export function checkQuoteMatch(predQuote: string, goldQuote: string): { matches: boolean; ratio: number } {
+  const normPred = normalizeText(predQuote);
+  const normGold = normalizeText(goldQuote);
 
-  if (wordsA.size === 0 || wordsB.size === 0) return false;
-
-  let common = 0;
-  for (const w of wordsA) {
-    if (wordsB.has(w)) common++;
+  if (normPred.includes(normGold) || normGold.includes(normPred)) {
+    return { matches: true, ratio: 1.0 };
   }
 
-  const overlap = common / Math.min(wordsA.size, wordsB.size);
-  return overlap >= 0.35;
+  const shorterLen = Math.min(normPred.length, normGold.length);
+  if (shorterLen === 0) return { matches: false, ratio: 0 };
+
+  const lcs = longestCommonSubstringLength(normPred, normGold);
+  const ratio = lcs / shorterLen;
+  return { matches: ratio >= 0.60, ratio };
 }
 
 /**
- * Realistic extractor simulating LLM extraction for the eval corpus.
- * Follows real-world behavior: catches primary clauses, occasionally misses complex cross-references
- * or flags borderline liability phrases.
+ * Delay helper
  */
-function extractClausesForDoc(docId: string, text: string): { rawClauses: Clause[]; documentType: string } {
-  const lines = text.split('\n');
-  const rawClauses: Clause[] = [];
+const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-  // Patterns for realistic discovery
-  const patterns: { category: ClauseCategory; severity: number; regex: RegExp; expl: string }[] = [
-    {
-      category: 'auto_renewal',
-      severity: 3,
-      regex: /(will\s+automatically\s+renew|membership\s+will\s+continue\s+and\s+automatically\s+renew|Paid\s+subscriptions\s+renew\s+automatically|All\s+subscription\s+plans\s+renew\s+automatically|automatically\s+billed\s+from\s+the\s+date)[^.\n]*\./i,
-      expl: 'Subscription renews automatically without explicit affirmative re-authorization.',
-    },
-    {
-      category: 'no_refund',
-      severity: 4,
-      regex: /(do\s+not\s+provide\s+refunds|Payments\s+are\s+nonrefundable|Fees\s+are\s+non-refundable|Refunds\s+are\s+only\s+issued\s+if\s+required\s+by\s+law)[^.\n]*\./i,
-      expl: 'Strict no-refund policy limits remedies for canceled service.',
-    },
-    {
-      category: 'unilateral_changes',
-      severity: 3,
-      regex: /(reserve\s+the\s+right\s+to\s+change\s+our\s+subscription\s+plans|modify,\s+update,\s+or\s+discontinue\s+the\s+Services|reserves\s+the\s+right\s+to\s+modify\s+or\s+discontinue|revise\s+these\s+Terms\s+from\s+time\s+to\s+time)[^.\n]*\./i,
-      expl: 'Company reserves the right to modify services, terms, or pricing unilaterally.',
-    },
-    {
-      category: 'forced_arbitration',
-      severity: 5,
-      regex: /(determined\s+by\s+mandatory\s+binding\s+individual\s+arbitration|shall\s+be\s+determined\s+by\s+binding\s+arbitration|settled\s+by\s+binding\s+arbitration|resolved\s+by\s+individual\s+final\s+and\s+binding\s+arbitration|resolve\s+any\s+claims[^.\n]*through\s+final\s+and\s+binding\s+arbitration)[^.\n]*\./i,
-      expl: 'Waives judicial trial rights in favor of mandatory private binding arbitration.',
-    },
-    {
-      category: 'class_action_waiver',
-      severity: 5,
-      regex: /(waiving\s+the\s+right\s+to\s+a\s+trial\s+by\s+jury\s+or\s+to\s+participate[^.\n]*class\s+action|NOT\s+AS\s+A\s+PLAINTIFF\s+OR\s+CLASS\s+MEMBER|waive\s+any\s+right\s+to\s+pursue\s+or\s+participate\s+in\s+any\s+class\s+action|NOT\s+AS\s+A\s+CLASS\s+ACTION\s+PLAINTIFF|NOT\s+BRING\s+A\s+CLAIM\s+AS\s+A\s+PLAINTIFF\s+OR\s+A\s+CLASS\s+MEMBER)[^.\n]*\./i,
-      expl: 'Prohibits participating in class action or collective lawsuits.',
-    },
-    {
-      category: 'content_license_grant',
-      severity: 4,
-      regex: /(grant\s+Spotify\s+a\s+worldwide,\s+non-exclusive|grant\s+us\s+a\s+non-exclusive,\s+worldwide,\s+royalty-free|grant\s+Zoom\s+a\s+perpetual,\s+worldwide|grant\s+Dropbox\s+a\s+worldwide,\s+royalty-free\s+license)[^.\n]*\./i,
-      expl: 'Broad sublicensable license to user content.',
-    },
-    {
-      category: 'account_termination_without_notice',
-      severity: 4,
-      regex: /(terminate\s+your\s+account\s+or\s+suspend[^.\n]*without\s+prior\s+notice|immediately\s+terminate\s+or\s+suspend[^.\n]*without\s+prior\s+notice|suspend\s+your\s+access\s+to\s+the\s+Service\s+immediately\s+and\s+without\s+notice)[^.\n]*\./i,
-      expl: 'Account can be terminated or suspended without prior warning.',
-    },
-    {
-      category: 'liability_limitation',
-      severity: 4,
-      regex: /(in\s+no\s+event\s+will\s+Spotify[^.\n]*be\s+liable|Adobe's\s+aggregate\s+liability[^.\n]*shall\s+not\s+exceed|aggregate\s+liability\s+for\s+all\s+claims[^.\n]*shall\s+not\s+exceed)[^.\n]*\./i,
-      expl: 'Disclaims significant categories of consequential damages and caps recovery.',
-    },
-  ];
+/**
+ * Robust LLM call with retry and exponential backoff for 429/rate-limits
+ */
+async function callLLMWithBackoff(
+  provider: GeminiProvider,
+  request: { systemPrompt: string; userPrompt: string; jsonMode: boolean },
+  stats: { llmCalls: number; retries: number }
+): Promise<string> {
+  const maxRetries = 4;
+  let delay = 5000; // 5s initial backoff
 
-  let idCounter = 1;
-  for (const p of patterns) {
-    const match = text.match(p.regex);
-    if (match) {
-      rawClauses.push({
-        id: `extracted-${idCounter++}`,
-        category: p.category,
-        severity: p.severity,
-        quote: match[0].trim(),
-        explanation: p.expl,
-        confidence: 0.92,
-      });
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    stats.llmCalls++;
+    try {
+      const response = await provider.call(request);
+      // Courtesy delay between API calls to respect rate limits
+      await sleep(3500);
+      return response;
+    } catch (err: any) {
+      const errMsg = String(err?.message || err);
+      const isRateLimit = errMsg.includes('429') || errMsg.includes('RESOURCE_EXHAUSTED') || errMsg.includes('quota');
+
+      if (attempt < maxRetries && isRateLimit) {
+        stats.retries++;
+        console.warn(`[Gemini API] Rate limit hit (attempt ${attempt + 1}/${maxRetries}). Backing off for ${delay}ms...`);
+        await sleep(delay);
+        delay *= 2; // exponential backoff
+      } else if (attempt < maxRetries && (errMsg.includes('fetch failed') || errMsg.includes('TIMEOUT'))) {
+        stats.retries++;
+        console.warn(`[Gemini API] Network/Timeout error (attempt ${attempt + 1}/${maxRetries}). Retrying in 4000ms...`);
+        await sleep(4000);
+      } else {
+        throw err;
+      }
+    }
+  }
+  throw new Error('Exceeded maximum retries for LLM call');
+}
+
+/**
+ * Startup sanity verification:
+ * Verify every gold quote appears verbatim in its document before starting eval.
+ */
+function verifyAllGoldQuotesAtStartup(docsDir: string, goldDir: string) {
+  console.log('--- Phase C Startup: Verifying all Gold Quotes against documents ---');
+  const goldFiles = fs.readdirSync(goldDir).filter(f => f.endsWith('.json'));
+  let failureCount = 0;
+
+  for (const gFile of goldFiles) {
+    const docId = gFile.replace('.json', '');
+    const docPath = path.join(docsDir, `${docId}.txt`);
+    const goldPath = path.join(goldDir, gFile);
+
+    if (!fs.existsSync(docPath)) {
+      console.error(`ERROR: Document file missing: ${docPath}`);
+      failureCount++;
+      continue;
+    }
+
+    const docText = fs.readFileSync(docPath, 'utf8');
+    const gold: GoldFile = JSON.parse(fs.readFileSync(goldPath, 'utf8'));
+
+    for (const clause of gold.clauses) {
+      const check = verifyQuote(clause.quote, docText);
+      if (!check.found) {
+        console.error(`FAIL at startup: Gold quote in ${gFile} [${clause.id}] not found in source!`);
+        console.error(`  Quote: "${clause.quote}"`);
+        failureCount++;
+      }
     }
   }
 
-  // Intentionally inject 1 hallucinated quote into Spotify to test and prove the dropped-claims verification filter
-  if (docId === 'spotify_tos') {
-    rawClauses.push({
-      id: `extracted-hallucinated-1`,
-      category: 'data_selling',
-      severity: 5,
-      quote: 'We openly sell your raw payment records to international credit marketing consortiums without restriction.',
-      explanation: 'Hallucinated claim by model without source backing.',
-      confidence: 0.88,
-    });
+  if (failureCount > 0) {
+    throw new Error(`Startup verification failed: ${failureCount} gold quote(s) could not be verified in source documents.`);
   }
-
-  // Borderline false alarm for Netflix to simulate real LLM slight over-flagging
-  if (docId === 'netflix_terms') {
-    rawClauses.push({
-      id: `extracted-fp-1`,
-      category: 'account_termination_without_notice',
-      severity: 3,
-      quote: 'We may terminate your account or place your account on hold in order to protect you, Netflix or our partners from identity theft or other fraudulent activity.',
-      explanation: 'Over-flagged protective fraud hold as abusive account termination.',
-      confidence: 0.70,
-    });
-  }
-
-  return { rawClauses, documentType: 'tos' };
+  console.log('Startup check passed: 100% of gold quotes verified verbatim in source docs.\n');
 }
 
-export function runEvaluation(): DocEvalResult[] {
+/**
+ * De-duplicate clauses by quote text
+ */
+function deduplicateClauses(clauses: Clause[]): Clause[] {
+  const seen = new Map<string, Clause>();
+  for (const c of clauses) {
+    const key = normalizeText(c.quote);
+    const existing = seen.get(key);
+    if (!existing || c.confidence > existing.confidence) {
+      seen.set(key, c);
+    }
+  }
+  return Array.from(seen.values());
+}
+
+/**
+ * Run evaluation across the 5 corpus documents
+ */
+export async function runFullEvaluation(runIdentifier: string): Promise<EvalRunSummary> {
   const docsDir = path.resolve(__dirname, 'docs');
   const goldDir = path.resolve(__dirname, 'gold');
 
-  const docFiles = fs.readdirSync(docsDir).filter(f => f.endsWith('.txt'));
-  const results: DocEvalResult[] = [];
+  verifyAllGoldQuotesAtStartup(docsDir, goldDir);
+
+  const provider = new GeminiProvider({
+    provider: 'gemini',
+    apiKey,
+    model: modelName,
+  });
+
+  const docFiles = fs.readdirSync(docsDir).filter(f => f.endsWith('.txt')).sort();
+  const docResults: DocEvalMetrics[] = [];
+
+  let totalLlmCalls = 0;
+  let totalRetries = 0;
+  let totalSchemaFailures = 0;
+  let totalAnalysisFailures = 0;
+
+  console.log(`================================================================`);
+  console.log(`Starting Evaluation Run: ${runIdentifier}`);
+  console.log(`Provider: Google Gemini | Model: ${modelName} | Date: ${new Date().toISOString()}`);
+  console.log(`Documents to evaluate: ${docFiles.length}`);
+  console.log(`================================================================\n`);
 
   for (const docFile of docFiles) {
     const docId = docFile.replace('.txt', '');
@@ -184,195 +293,289 @@ export function runEvaluation(): DocEvalResult[] {
     const goldPath = path.join(goldDir, `${docId}.json`);
 
     if (!fs.existsSync(goldPath)) {
-      console.warn(`Gold file missing for ${docId}`);
+      console.warn(`Gold file missing for ${docId}, skipping.`);
       continue;
     }
 
-    const text = fs.readFileSync(docPath, 'utf-8');
-    const gold: GoldFile = JSON.parse(fs.readFileSync(goldPath, 'utf-8'));
+    const docText = fs.readFileSync(docPath, 'utf8');
+    const gold: GoldFile = JSON.parse(fs.readFileSync(goldPath, 'utf8'));
+    const wordCount = docText.split(/\s+/).filter(Boolean).length;
 
-    // Run extraction
-    const { rawClauses, documentType } = extractClausesForDoc(docId, text);
+    console.log(`\n------------------------------------------------------------`);
+    console.log(`Evaluating ${docId} (${gold.document_name})`);
+    console.log(`Text length: ${docText.length} chars (~${wordCount} words) | Gold clauses: ${gold.clauses.length}`);
+    console.log(`------------------------------------------------------------`);
 
-    // Run verification pipeline (schema, quote verification, dedupe, drop)
-    const verifiedClauses: Clause[] = [];
-    let droppedCount = 0;
+    const docStats = { llmCalls: 0, retries: 0 };
+    let docSchemaFailures = 0;
+    let docAnalysisFailures = 0;
 
-    for (const c of rawClauses) {
-      // Validate schema
-      const valid = LLMResponseSchema.shape.clauses.element.safeParse(c);
-      if (!valid.success) {
-        droppedCount++;
-        continue;
-      }
+    // 1. Chunk document
+    const chunks = chunkText(docText, 12000, 500);
+    console.log(`Document split into ${chunks.length} chunks.`);
 
-      // Verify quote against source text
-      const verification = verifyQuote(c.quote, text);
-      if (verification.found) {
-        verifiedClauses.push(c);
-      } else {
-        droppedCount++;
+    let allRawClauses: Clause[] = [];
+
+    // 2. Analyze chunks with real LLM
+    for (const chunk of chunks) {
+      console.log(`Analyzing chunk ${chunk.index + 1}/${chunk.totalChunks}...`);
+      const systemPrompt = buildSystemPrompt();
+      const userPrompt = buildUserPrompt(chunk.text, { index: chunk.index, total: chunk.totalChunks });
+
+      try {
+        let responseText = await callLLMWithBackoff(
+          provider,
+          { systemPrompt, userPrompt, jsonMode: true },
+          docStats
+        );
+
+        let parsed: any;
+        try {
+          parsed = JSON.parse(responseText);
+        } catch {
+          // Retry once with error feedback
+          console.warn(`Invalid JSON on chunk ${chunk.index + 1}. Retrying once with error feedback...`);
+          const retryPrompt = `${userPrompt}\n\nYour previous response was not valid JSON. Return ONLY valid JSON matching the schema.`;
+          responseText = await callLLMWithBackoff(
+            provider,
+            { systemPrompt, userPrompt: retryPrompt, jsonMode: true },
+            docStats
+          );
+          try {
+            parsed = JSON.parse(responseText);
+          } catch (e) {
+            console.error(`Permanent JSON parse error on chunk ${chunk.index + 1}`);
+            docSchemaFailures++;
+            continue;
+          }
+        }
+
+        // Schema validation with Zod
+        const validation = LLMResponseSchema.safeParse(parsed);
+        if (!validation.success) {
+          console.warn(`Schema validation error on chunk ${chunk.index + 1}. Retrying once...`);
+          const errList = validation.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join('; ');
+          const retryPrompt = `${userPrompt}\n\nYour previous response had schema validation errors: ${errList}. Fix and return valid JSON.`;
+          responseText = await callLLMWithBackoff(
+            provider,
+            { systemPrompt, userPrompt: retryPrompt, jsonMode: true },
+            docStats
+          );
+          try {
+            const retryParsed = JSON.parse(responseText);
+            const retryVal = LLMResponseSchema.safeParse(retryParsed);
+            if (retryVal.success) {
+              allRawClauses.push(...retryVal.data.clauses);
+            } else {
+              console.error(`Permanent schema validation failure on chunk ${chunk.index + 1}`);
+              docSchemaFailures++;
+            }
+          } catch {
+            docSchemaFailures++;
+          }
+        } else {
+          allRawClauses.push(...validation.data.clauses);
+        }
+      } catch (err) {
+        console.error(`Analysis failure on chunk ${chunk.index + 1}:`, err);
+        docAnalysisFailures++;
       }
     }
 
-    // Compute deterministic score
-    const scoreResult = computeScore(verifiedClauses, droppedCount, rawClauses.length);
+    // 3. Deduplicate extracted clauses across chunks
+    const deduplicated = deduplicateClauses(allRawClauses);
+    const totalExtracted = deduplicated.length;
 
-    // Evaluate against gold standard
-    let tp = 0;
-    const matchedGold = new Set<string>();
-    const matchedPred = new Set<string>();
+    // 4. Quote verification pipeline
+    const verifiedExtracted: Clause[] = [];
+    const droppedExamples: { quote: string; category: string }[] = [];
+    let droppedClaims = 0;
 
-    for (const pred of verifiedClauses) {
-      for (const g of gold.clauses) {
-        if (!matchedGold.has(g.id) && pred.category === g.category && quotesOverlap(pred.quote, g.quote)) {
-          tp++;
-          matchedGold.add(g.id);
-          matchedPred.add(pred.id);
-          break;
+    for (const c of deduplicated) {
+      const res = verifyQuote(c.quote, docText);
+      if (res.found) {
+        verifiedExtracted.push(c);
+      } else {
+        droppedClaims++;
+        droppedExamples.push({ quote: c.quote, category: c.category });
+        console.log(`[DROPPED CLAIM] Hallucinated/unverified quote: "${c.quote.substring(0, 80)}..."`);
+      }
+    }
+
+    // 5. Compute risk score
+    const scoreResult = computeScore(verifiedExtracted, droppedClaims, totalExtracted);
+
+    // 6. Match against Gold Annotations
+    // Rule: Same category AND (containment OR overlap >= 60% of shorter)
+    // Gold clause matched at most once.
+    const matchedGoldIds = new Set<string>();
+    const matchedPredIndices = new Set<number>();
+    const tpMatches: { goldId: string; goldQuote: string; predQuote: string; category: string; overlap: number }[] = [];
+
+    // Prioritize highest overlap matches
+    for (let pIdx = 0; pIdx < verifiedExtracted.length; pIdx++) {
+      const pred = verifiedExtracted[pIdx];
+      let bestGold: GoldClause | null = null;
+      let bestOverlap = 0;
+
+      for (const goldClause of gold.clauses) {
+        if (matchedGoldIds.has(goldClause.id)) continue;
+        if (pred.category !== goldClause.category) continue;
+
+        const matchCheck = checkQuoteMatch(pred.quote, goldClause.quote);
+        if (matchCheck.matches && matchCheck.ratio > bestOverlap) {
+          bestOverlap = matchCheck.ratio;
+          bestGold = goldClause;
         }
       }
+
+      if (bestGold) {
+        matchedGoldIds.add(bestGold.id);
+        matchedPredIndices.add(pIdx);
+        tpMatches.push({
+          goldId: bestGold.id,
+          goldQuote: bestGold.quote,
+          predQuote: pred.quote,
+          category: pred.category,
+          overlap: Math.round(bestOverlap * 100),
+        });
+      }
     }
 
-    const fp = verifiedClauses.length - matchedPred.size;
-    const fn = gold.clauses.length - matchedGold.size;
+    const tp = tpMatches.length;
+    const fpClauses: { quote: string; category: string; explanation: string }[] = [];
+    for (let pIdx = 0; pIdx < verifiedExtracted.length; pIdx++) {
+      if (!matchedPredIndices.has(pIdx)) {
+        const p = verifiedExtracted[pIdx];
+        fpClauses.push({ quote: p.quote, category: p.category, explanation: p.explanation });
+      }
+    }
+    const fp = fpClauses.length;
 
-    const precision = verifiedClauses.length > 0 ? tp / (tp + fp) : 0;
-    const recall = gold.clauses.length > 0 ? tp / (tp + fn) : 0;
+    const fnClauses: { goldId: string; quote: string; category: string; rationale?: string }[] = [];
+    for (const g of gold.clauses) {
+      if (!matchedGoldIds.has(g.id)) {
+        fnClauses.push({ goldId: g.id, quote: g.quote, category: g.category, rationale: g.rationale });
+      }
+    }
+    const fn = fnClauses.length;
+
+    const precision = tp + fp > 0 ? tp / (tp + fp) : 0;
+    const recall = tp + fn > 0 ? tp / (tp + fn) : 0;
     const f1 = precision + recall > 0 ? (2 * precision * recall) / (precision + recall) : 0;
 
-    // Collect concrete failure examples
-    const missedExamples = gold.clauses
-      .filter(g => !matchedGold.has(g.id))
-      .slice(0, 2)
-      .map(g => ({
-        goldQuote: g.quote,
-        category: g.category,
-        reason: 'Complex phrasing or multi-sentence clause not captured by chunk extraction.',
-      }));
+    console.log(`Results for ${docId}: TP=${tp}, FP=${fp}, FN=${fn} | P=${(precision*100).toFixed(1)}% R=${(recall*100).toFixed(1)}% F1=${(f1*100).toFixed(1)}% | Dropped=${droppedClaims} Score=${scoreResult.score} (${scoreResult.label})`);
 
-    const falseAlarmExamples = verifiedClauses
-      .filter(p => !matchedPred.has(p.id))
-      .slice(0, 2)
-      .map(p => ({
-        predQuote: p.quote,
-        category: p.category,
-        reason: 'Ambiguous or protective clause interpreted with excessive severity.',
-      }));
+    totalLlmCalls += docStats.llmCalls;
+    totalRetries += docStats.retries;
+    totalSchemaFailures += docSchemaFailures;
+    totalAnalysisFailures += docAnalysisFailures;
 
-    results.push({
+    docResults.push({
       docId,
-      name: gold.document_name,
+      documentName: gold.document_name,
+      wordCount,
       totalGold: gold.clauses.length,
-      totalPredicted: verifiedClauses.length,
+      totalExtracted,
+      droppedClaims,
+      verifiedExtracted: verifiedExtracted.length,
       tp,
       fp,
       fn,
-      dropped: droppedCount,
-      precision: Math.round(precision * 100) / 100,
-      recall: Math.round(recall * 100) / 100,
-      f1: Math.round(f1 * 100) / 100,
+      precision,
+      recall,
+      f1,
       score: scoreResult.score,
       riskLabel: scoreResult.label,
-      missedExamples,
-      falseAlarmExamples,
+      llmCalls: docStats.llmCalls,
+      retries: docStats.retries,
+      schemaFailures: docSchemaFailures,
+      analysisFailures: docAnalysisFailures,
+      tpMatches,
+      fpClauses,
+      fnClauses,
+      droppedExamples,
     });
   }
 
-  return results;
+  // Calculate overall metrics
+  const totalGold = docResults.reduce((acc, r) => acc + r.totalGold, 0);
+  const totalExtracted = docResults.reduce((acc, r) => acc + r.totalExtracted, 0);
+  const totalDropped = docResults.reduce((acc, r) => acc + r.droppedClaims, 0);
+  const totalTp = docResults.reduce((acc, r) => acc + r.tp, 0);
+  const totalFp = docResults.reduce((acc, r) => acc + r.fp, 0);
+  const totalFn = docResults.reduce((acc, r) => acc + r.fn, 0);
+
+  const microPrecision = totalTp + totalFp > 0 ? totalTp / (totalTp + totalFp) : 0;
+  const microRecall = totalTp + totalFn > 0 ? totalTp / (totalTp + totalFn) : 0;
+  const microF1 = microPrecision + microRecall > 0 ? (2 * microPrecision * microRecall) / (microPrecision + microRecall) : 0;
+
+  const macroPrecision = docResults.reduce((acc, r) => acc + r.precision, 0) / (docResults.length || 1);
+  const macroRecall = docResults.reduce((acc, r) => acc + r.recall, 0) / (docResults.length || 1);
+  const macroF1 = docResults.reduce((acc, r) => acc + r.f1, 0) / (docResults.length || 1);
+
+  const summary: EvalRunSummary = {
+    runId: runIdentifier,
+    runDate: new Date().toISOString(),
+    provider: 'Google Gemini',
+    model: modelName,
+    totalLlmCalls,
+    totalRetries,
+    totalSchemaFailures,
+    totalAnalysisFailures,
+    totalGold,
+    totalExtracted,
+    totalDropped,
+    totalTp,
+    totalFp,
+    totalFn,
+    microPrecision,
+    microRecall,
+    microF1,
+    macroPrecision,
+    macroRecall,
+    macroF1,
+    docResults,
+  };
+
+  return summary;
 }
 
-export function generateEvalMarkdown(results: DocEvalResult[]): string {
-  const totalGold = results.reduce((sum, r) => sum + r.totalGold, 0);
-  const totalPredicted = results.reduce((sum, r) => sum + r.totalPredicted, 0);
-  const totalTp = results.reduce((sum, r) => sum + r.tp, 0);
-  const totalFp = results.reduce((sum, r) => sum + r.fp, 0);
-  const totalFn = results.reduce((sum, r) => sum + r.fn, 0);
-  const totalDropped = results.reduce((sum, r) => sum + r.dropped, 0);
+// CLI runner
+async function main() {
+  const run1 = await runFullEvaluation('Run-1');
+  const run1Path = path.join(rootDir, 'eval', 'results_run1.json');
+  fs.writeFileSync(run1Path, JSON.stringify(run1, null, 2), 'utf8');
+  console.log(`Saved Run 1 results to ${run1Path}`);
 
-  const totalPrecision = totalPredicted > 0 ? Math.round((totalTp / (totalTp + totalFp)) * 100) / 100 : 0;
-  const totalRecall = totalGold > 0 ? Math.round((totalTp / (totalTp + totalFn)) * 100) / 100 : 0;
-  const totalF1 = totalPrecision + totalRecall > 0 ? Math.round(((2 * totalPrecision * totalRecall) / (totalPrecision + totalRecall)) * 100) / 100 : 0;
+  console.log('\nPausing 10 seconds before starting Run 2 to measure variance...');
+  await sleep(10000);
 
-  let md = `# EVAL.md - Evaluation Report on Real-World Legal Documents (30 pts)
+  const run2 = await runFullEvaluation('Run-2');
+  const run2Path = path.join(rootDir, 'eval', 'results_run2.json');
+  fs.writeFileSync(run2Path, JSON.stringify(run2, null, 2), 'utf8');
+  console.log(`Saved Run 2 results to ${run2Path}`);
 
-## Evaluation Methodology
-- **Documents Analyzed**: 5 authentic Terms of Service / Privacy Policy documents (Spotify, Netflix, Adobe, Zoom, Dropbox) with verifiable source URLs and retrieval dates.
-- **Gold Standards**: Hand-annotated reference datasets under \`/eval/gold/*.json\` indicating verified predatory or noteworthy clauses categorized into the 17-item enum taxonomy.
-- **Match Criteria**: A prediction is counted as True Positive (TP) if and only if:
-  1. The assigned \`category\` matches the gold standard category.
-  2. The extracted \`quote\` overlaps with the gold quote (>35% lexical overlap or substring containment).
-  3. The quote passes strict code-level verification against the raw captured source text.
+  console.log('\n============================================================');
+  console.log('EVALUATION COMPARISON (RUN 1 vs RUN 2)');
+  console.log('============================================================');
+  console.log(`Total Gold Clauses: ${run1.totalGold}`);
+  console.log(`Run 1: TP=${run1.totalTp}, FP=${run1.totalFp}, FN=${run1.totalFn} | P=${(run1.microPrecision*100).toFixed(1)}% R=${(run1.microRecall*100).toFixed(1)}% F1=${(run1.microF1*100).toFixed(1)}% | Calls=${run1.totalLlmCalls}`);
+  console.log(`Run 2: TP=${run2.totalTp}, FP=${run2.totalFp}, FN=${run2.totalFn} | P=${(run2.microPrecision*100).toFixed(1)}% R=${(run2.microRecall*100).toFixed(1)}% F1=${(run2.microF1*100).toFixed(1)}% | Calls=${run2.totalLlmCalls}`);
 
----
-
-## Benchmark Results Summary
-
-| Document | Gold Clauses | Extracted | True Pos (TP) | False Pos (FP) | Missed (FN) | Dropped (Hallucinated) | Precision | Recall | F1 Score | Computed Risk Score | Risk Label |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-`;
-
-  for (const r of results) {
-    md += `| **${r.name}** | ${r.totalGold} | ${r.totalPredicted} | ${r.tp} | ${r.fp} | ${r.fn} | ${r.dropped} | ${r.precision} | ${r.recall} | ${r.f1} | ${r.score}/100 | ${r.riskLabel} |\n`;
+  for (let i = 0; i < run1.docResults.length; i++) {
+    const d1 = run1.docResults[i];
+    const d2 = run2.docResults[i];
+    console.log(`\nDoc: ${d1.docId}`);
+    console.log(`  Run 1: TP=${d1.tp} FP=${d1.fp} FN=${d1.fn} | F1=${(d1.f1*100).toFixed(1)}% | Score=${d1.score} (${d1.riskLabel}) | Dropped=${d1.droppedClaims}`);
+    console.log(`  Run 2: TP=${d2.tp} FP=${d2.fp} FN=${d2.fn} | F1=${(d2.f1*100).toFixed(1)}% | Score=${d2.score} (${d2.riskLabel}) | Dropped=${d2.droppedClaims}`);
+    const deltaF1 = ((d2.f1 - d1.f1) * 100).toFixed(1);
+    const deltaScore = d2.score - d1.score;
+    console.log(`  Variance: ΔF1=${deltaF1}% | ΔScore=${deltaScore} pts`);
   }
-
-  md += `| **TOTAL / OVERALL** | **${totalGold}** | **${totalPredicted}** | **${totalTp}** | **${totalFp}** | **${totalFn}** | **${totalDropped}** | **${totalPrecision}** | **${totalRecall}** | **${totalF1}** | **-** | **-** |\n\n`;
-
-  md += `---
-
-## Concrete Failure Analysis: Example Misses and False Alarms
-
-### 1. Concrete Misses (False Negatives)
-
-#### Example 1: Spotify - Third-Party Data Sharing & Device Identifiers
-- **Gold Category**: \`third_party_data_sharing\`
-- **Gold Quote**: *"Spotify may share your personal data, listening history, and device identifiers with third-party partners and advertising networks to provide and personalize these experiences and targeted advertisements."*
-- **Root Cause**: The clause is nested under a section titled *"Third Party Applications"* rather than a dedicated privacy section. When documents use permissive phrasing (*"to personalize these experiences"*), classifiers sometimes conflate standard service delivery with commercial data sharing.
-
-#### Example 2: Adobe - Early Cancellation Termination Penalty (50% Fee)
-- **Gold Category**: \`hard_to_cancel\`
-- **Gold Quote**: *"If you cancel an annual plan paid monthly after the initial 14-day cancellation window, you may be charged an early termination fee equal to 50% of the remaining contract obligation."*
-- **Root Cause**: The model accurately flagged the auto-renewal portion of the paragraph but truncated the quote before the secondary conditional sentence describing the 50% termination penalty, missing the compound violation.
-
-#### Example 3: Netflix - Behavioral Profiling & Recommendation Analytics
-- **Gold Category**: \`tracking_profiling\`
-- **Gold Quote**: *"We use this information for behavioral profiling, algorithm training, and providing personalized recommendations and targeted commercial promotions."*
-- **Root Cause**: The sentence begins with technical telemetry descriptions before describing profiling. Without explicit cross-sentence context linking data collection to behavioral profiling, the classifier under-scored the confidence.
-
----
-
-### 2. Concrete False Alarms (False Positives)
-
-#### Example 1: Netflix - Protective Fraud Hold Misclassified as Termination Without Notice
-- **Flagged Category**: \`account_termination_without_notice\`
-- **Extracted Quote**: *"We may terminate your account or place your account on hold in order to protect you, Netflix or our partners from identity theft or other fraudulent activity."*
-- **Root Cause**: The system reacted to the phrase *"terminate your account or place your account on hold"* without distinguishing between arbitrary/punitive termination and necessary security fraud mitigation.
-
----
-
-## Hallucination & Dropped Claims Verification
-
-The quote verification engine successfully trapped and dropped **${totalDropped}** claim(s):
-- In **Spotify Terms of Use**, a fabricated claim (*"We openly sell your raw payment records to international credit marketing consortiums..."*) was deliberately provided during the pipeline run.
-- **Verification Engine Action**: Code computed exact and fuzzy Dice similarity against the raw text. Similarity was 0.00 (< 0.95 threshold).
-- **Result**: The invalid claim was cleanly purged, and the UI displayed \`⚠️ 1 claim(s) dropped because the quote could not be verified\`.
-
----
-
-## Honest System Limits & Discussion
-
-1. **Vague and Permissive Legal Jargon**: Terms frequently use hedging language like *"reasonable discretion"*, *"commercially reasonable efforts"*, or *"from time to time"*. Discerning whether *"from time to time"* constitutes predatory unilateral changes requires contextual nuance.
-2. **Cross-Sectional Dependencies**: Many contracts divide rules across sections (e.g. general dispute resolution in Section 8, but exceptions for intellectual property in Section 14). Chunking with 500-character overlap helps preserve boundaries, but cross-document references (e.g., *"subject to Section 4.2 above"*) remain challenging.
-3. **No Flattering Adjustments**: Gold files reflect genuine legal annotations written independently by evaluators, preserving authentic precision and recall trade-offs.
-`;
-
-  return md;
 }
 
-console.log('Running evaluation suite across real ToS documents...');
-const results = runEvaluation();
-const markdown = generateEvalMarkdown(results);
-const outPath = path.resolve(__dirname, '../EVAL.md');
-fs.writeFileSync(outPath, markdown, 'utf-8');
-console.log(`Evaluation complete! Written report to ${outPath}`);
-console.log(`Summary: TP=${results.reduce((s, r) => s + r.tp, 0)}, FP=${results.reduce((s, r) => s + r.fp, 0)}, FN=${results.reduce((s, r) => s + r.fn, 0)}, Dropped=${results.reduce((s, r) => s + r.dropped, 0)}`);
+main().catch(err => {
+  console.error('Fatal evaluation error:', err);
+  process.exit(1);
+});
